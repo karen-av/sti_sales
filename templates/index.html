@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Главная
+{% endblock %}
+
+{% block main %}
+<head>
+    <style>
+        button {width: 350px;}
+        
+    </style>
+</head>
+
+<div class="route">
+    <a href="/">Главная</a> 
+</div>
+
+
+<div style="width: 100%;">
+   
+    <form action="/users" method="get">
+        <button class="btn btn-primary">Все участники</button>
+    </form>
+    <p></p>
+    <form action="/positions" method="get">
+        <button class="btn btn-primary">Ранжирование компетенций по должностям</button>
+    </form>
+    <p></p>
+    <form action="/test_results" method="get">
+        <button class="btn btn-primary">Результаты тестирования 'Дельта аи'</button>
+    </form>
+    <p></p>
+    <form action="/file_users" method="get">
+        <button class="btn btn-primary">Загрузить сотрудников файлом</button>
+    </form>
+    <p></p>
+    <form action="/file_test" method="get">
+        <button class="btn btn-primary">Загрузить результаты тестирования 'Дельта аи'</button>
+    </form>
+    <p></p>
+    <form action="/mail_manager" method="get">
+        <button class="btn btn-primary">Отправить сообщение сотрудникам</button>
+    </form>
+    <p></p>
+    <form action="/mail_heads" method="get">
+        <button class="btn btn-primary">Отправить сообщение руководителям</button>
+    </form>
+    <p></p>
+    <form action="/not_done" method="get">
+        <button class="btn btn-primary">Зашли и не выполнили</button>
+    </form>
+    <p></p>
+    <form action="/summary" method="get">
+        <button class="btn btn-primary">Итоговая таблица</button>
+    </form>
+    <p></p>
+    <form action="/settings" method="get">
+        <button class="btn btn-primary">Настройки</button>
+    </form>
+    <p></p>
+    <form action="/download" method="get">
+        <button class="btn btn-primary">Скачать</button>
+    </form>
+    {%if status == 'admin'%}
+    <p></p>
+    <form action="/log_table" method="get">
+        <button class="btn btn-primary">Log</button>
+    </form>
+    {%endif%}
+    
+</div>
+   
+{% endblock %}
