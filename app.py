@@ -10,7 +10,6 @@ import datetime
 from forms import ContactForm
 from werkzeug.exceptions import HTTPException
 import time
-from config import Config
 import constants
 from decorator import connection_db
 
