@@ -5,5 +5,109 @@
 {% endblock %}
 
 {% block main %}
-{{ users }}
+
+<div class="route">
+    <a href="/">Главная</a> - Все участники
+</div>
+
+<div class="box">
+    <div>
+        <button class="btn btn-primary" id="buttonAddShow" type="button" style="display:block" onclick="funcAddShow()" >Добавить пользователя</button>
+        <button class="btn btn-primary" id="buttonAddHid" type="button" style="display:none" onclick="funcAddHid()">Скрыть форму</button>
+    </div>
+    <div>
+       
+        </form> 
+    </div>
+    <div>
+        <form action="/users" method="post" name="search">
+        <div><input style="width: auto" autocomplete="off" id="query" name="query"  placeholder="почта для поиска" type="email"  maxlength="30" required></div>
+        <div><button class="btn btn-primary" id="buttonAddHid" type="submit" style="display:block">Поиск</button></div>
+        </form> 
+    </div>
+    <div><form action="/users" method="get" ><button class="btn btn-primary" type="submit" >Показать всех</button></form></div>
+   
+</div>
+  
+<div style="display:none;" id="addUser" class="addUser">
+    <form action="/register" method="post" name="register" onsubmit="return show_alert('Добавить пользователя?')">
+        <input style="width: 13%" autocomplete="off" id="department" name="department"  placeholder="Подразделение" type="text"  maxlength="30">
+        <input style="width: 13%" autocomplete="off" id="reports_to" name="reports_to"  placeholder="Email руководителя" type="email"  maxlength="30">
+        <input style="width: 7%" autocomplete="off" id="status" name="status" placeholder="Status" minlength="3" maxlength="30" required>
+        <input style="width: 10%" autocomplete="off" id="position" name="position" placeholder="Должность" minlength="3" maxlength="30" required>
+        <input style="width: 10%" autocomplete="off" id="name" name="name"  placeholder="ФИО" type="text" minlength="3" maxlength="30" required >
+        <input style="width: 10%" autocomplete="off" id="mail" name="mail"  placeholder="Почта" type="email" minlength="3" maxlength="30" required >
+        <input style="width: 10%" autocomplete="off" id="mail" name="password"  placeholder="Пароль" type="text" minlength="6" maxlength="30">
+        <button class="btn btn-primary" type="submit" id="button">Добавить</button>
+    </form>
+</div>
+
+    
+
+<table class="table table-striped" >
+    <thead >
+        <tr >
+            <th>N</th>
+            <th>Подразделение</th>
+            <th>Email руководителя</th>
+            <th>Статус</th>
+            <th>Должность</th>
+            <th>ФИО</th>
+            <th>Почта</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody> 
+        {% for user in users %}
+        <tr> 
+            <td>{{ loop.index }}</td>
+            <td>{{ user.1 }}</td>
+            <td>{{ user.2 }}</td>
+            <td>{{ user.3 }}</td>
+            <td>{{ user.4 }}</td>
+            <td>{{ user.5 }}</td>
+            <td>{{ user.6 }}</td>
+            <td>
+                <form action="/edit" method="post">
+                    <input type="hidden" value="render" name ="flag">
+                    <input type="hidden" value="{{ user.0 }}" name ="user_id">
+                    <button class="btn btn-primary" type="submit">Редакт</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>   
+
+<script>
+    function funcFiltrShow() {
+        document.getElementById("filtr").style.display = "block";
+        document.getElementById("buttonFiltrShow").style.display = "none"
+        document.getElementById("buttonFiltrHid").style.display = "block"
+        //document.getElementById("buttonAddShow").style.display = "none"
+    }
+
+    function funcFiltrHid() {
+        document.getElementById("filtr").style.display = "none";
+        document.getElementById("buttonFiltrHid").style.display = "none"
+        document.getElementById("buttonFiltrShow").style.display = "block"
+        //document.getElementById("buttonAddShow").style.display = "block"
+    }
+
+    function funcAddShow() {
+        document.getElementById("addUser").style.display = "block";
+        //document.getElementById("buttonFiltrShow").style.display = "none"
+        document.getElementById("buttonAddHid").style.display = "block"
+        document.getElementById("buttonAddShow").style.display = "none"
+
+    }
+
+    function funcAddHid() {
+        document.getElementById("addUser").style.display = "none";
+        //document.getElementById("buttonFiltrShow").style.display = "block"
+        document.getElementById("buttonAddShow").style.display = "block"
+        document.getElementById("buttonAddHid").style.display = "none"
+
+    }
+        </script>
 {% endblock %}

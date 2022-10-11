@@ -8,3 +8,4 @@ HEAD = 'head'
 MANAGER = 'manager'
 HEAD_COACH_EMAIL = 't.astralenko@sti-partners.ru'
 ALLOWED_EXTENSIONS = {'xlsx', 'xls'}
+POSITIONS_LIST = ("Директор", "Юрист", "Повар", "Садовник", 'Слесарь', 'DEV', 'Тренер')
