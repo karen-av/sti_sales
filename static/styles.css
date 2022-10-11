@@ -1,0 +1,163 @@
+/* Size for brand */
+nav .navbar-brand
+{
+    font-size: xx-large;
+}
+
+/* Colors for brand */
+nav .navbar-brand .blue
+{
+    color: #0948a0;
+}
+
+.btn-primary
+{
+background-color: rgb(163, 170, 170);
+}
+
+.btn-primary {
+    text-align: right"
+}
+
+
+table {
+    border-collapse: collapse;
+    /*убираем пустые промежутки между ячейками*/
+    border: 1px solid grey;
+    /*устанавливаем для таблицы внешнюю границу серого цвета толщиной 1px*/
+    margin:auto;
+    table-layout: fixed;
+}
+
+.table-striped {
+    /*table-layout: fixed;*/
+    table-layout: auto;
+    border-collapse: collapse;
+    width: 99%;
+    margin:auto; 
+    margin-bottom: 1%;
+    text-align:center;
+    
+}
+
+.table-bordered{
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+caption {
+    caption-side: bottom;
+    text-align: right;
+    padding: 10px 0;
+    font-size: 14px;
+ }
+
+form {
+    margin: auto; 
+    display: inline;
+    text-align: center;
+    width: 50%;
+}
+
+.form_upload {
+    margin: auto; 
+    text-align: center;
+    width: 50%;
+}
+
+
+.edit {
+    width: 100%;
+}
+
+.filtr, .addUser{
+    text-align: center;
+    
+    margin-bottom: 2%;
+}
+
+.box div { 
+    display:inline-block; 
+    margin-bottom: 2%;
+}
+
+.route{
+    text-align: left;
+    padding-left: 5%;
+    margin-bottom: 3%;
+}
+
+a {
+    color: grey
+   }
+
+input {
+    width: 10%;
+}
+
+table .red {
+background-color: rgb(237, 175, 175);
+}
+
+table .green {
+background-color: rgb(175, 237, 200 );
+}
+
+.login_text{
+    color: rgb(1, 41, 255);
+    margin-bottom: 5%;
+    margin-top: 10px;
+    font-size: 25px;
+}
+
+.error {
+    color: #0948a0;
+    font-size: xx-large;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    font-style: oblique;
+}
+
+#cookie_notification{
+    display: none;
+    justify-content: space-between;
+    align-items: flex-end;
+    position: fixed;
+    bottom: 15px;
+    left: 50%;
+    width: 900px;
+    max-width: 90%;
+    transform: translateX(-50%);
+    padding: 25px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.4);
+  }
+  
+  #cookie_notification p{
+    margin: 0;
+    font-size: 0.7rem;
+    text-align: left;
+    color: color_text;
+  }
+  
+  
+  @media (min-width: 576px){
+    #cookie_notification.show{
+      display: flex;
+    }
+    .cookie_accept{
+      margin: 0 0 0 25px;
+    }
+  }
+  
+  @media (max-width: 575px){
+    #cookie_notification.show{
+      display: block;
+      text-align: left;
+    }
+    .cookie_accept{
+      margin: 10px 0 0 0;
+    }
+  }

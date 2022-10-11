@@ -7,6 +7,13 @@ password = "8c83f577e40db85b6e810dfa0935f79f41f32c4c2414c89a9fa31f28957bf786"
 db_name = "dc2k8sqsffd92a"
 port = 5432
 
+class Config(object):
+    SECRET_KEY = '12345'
+    #SQLALCHEMY_DATABASE_URI = 'postgresql://vmfxqzwglzoagi:8c83f577e40db85b6e810dfa0935f79f41f32c4c2414c89a9fa31f28957bf786@ec2-34-193-44-192.compute-1.amazonaws.com/dc2k8sqsffd92a'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    TEMPLATES_AUTO_RELOAD = True
+
 
 class Config(object):
     SECRET_KEY = "12345"
