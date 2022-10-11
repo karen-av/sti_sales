@@ -1,7 +1,6 @@
 from flask import Flask, redirect, render_template, request, session, flash
 from flask_mail import Mail, Message
 from flask_session import Session
-import psycopg2
 from config import  Config
 from helpers import apology, login_required
 import os
