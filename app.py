@@ -69,10 +69,6 @@ def login():
     
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":  
-        session["user_id"] = ''
-        session["user_name"] = ''
-        session["user_status"] = ''
-        session["user_mail"] = ''
         today = datetime.datetime.today().strftime("%d.%m.%Y %X")  
 
         if form.validate_on_submit() is False:
