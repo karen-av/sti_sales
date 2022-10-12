@@ -7,6 +7,7 @@ COACH = 'coach'
 HEAD = 'head'
 MANAGER = 'manager'
 HEAD_COACH_EMAIL = 't.astralenko@sti-partners.ru'
+#HEAD_COACH_EMAIL = 'hd.spk27@gmail.com'
 ALLOWED_EXTENSIONS = {'xlsx', 'xls'}
 POSITIONS_LIST = ("Директор", "Юрист", "Повар", "Садовник", 'Слесарь', 'DEV', 'Тренер')
 QUESTIONS_DICT = [

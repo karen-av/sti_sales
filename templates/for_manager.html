@@ -79,9 +79,9 @@
       <button class="btn btn-primary" type="submit" onclick="return show_alert('Вы уверены, что ходите отправить?')">Отправить</button>
       </form>
 </div>
+{%endif%}
 <div style="margin-top: 5%; margin-bottom: 5%;">
       <form action="/mail_manager" method="post" onsubmit="return show_alert('Отправить сообщение?')">
-        <input type="hidden" value="mail_from_manager_start" name ="flag">
         <label for="exampleFormControlTextarea1" class="form-label"><p>Если у Вас остались вопросы, Вы можете связаться с нами через форму: <br>
             Мы ответим в течение дня обращения или на следующий день.</p></label>
         <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="messege_from_manager"></textarea>
@@ -91,10 +91,7 @@
 <div>
     <p>Для вопросов и общения используйте мой контакт:</p>
     <img class="instr" src="static/whatsapp.jpg" style=" width: 25%; height: auto;">
-    <img class="instr" src="static/telegram.jpg" style=" width: 22.5%; height: auto;">
+    <img class="instr" src="static/telegram.jpg" style=" width: 25%; height: auto;">
 </div>
-{%else%}
-
-{%endif%}
 
 {% endblock %}

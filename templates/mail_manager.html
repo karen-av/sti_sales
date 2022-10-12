@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Users
+{% endblock %}
+
+{% block main %}
+
+
+<div class="route">
+    <a href="/">Главная</a> - Сообщения сотрудникам
+</div>
+    <div class="box">
+        <div>
+        <form action="/mail_manager" method="post" onclick="return show_alert('Отправить сообщения всем сотрудникам?')">
+            <input type="hidden" value="all_invite" name ="flag"> 
+            <button class="btn btn-primary" type="submit" >Отправить сообщение всем сотрдникам</button><br>
+            * Сообщения отправятся тем участникам, которые еще не завершили опрос.
+        </form>
+        </div>
+    </div>
+
+    <table class="table table-striped" >
+        <thead >
+            <tr >
+                <th>N</th>
+                <th>Подразделение</th>
+                <th>Руководитель</th>
+                <th>Статус</th>
+                <th>Должность</th>
+                <th>ФИО</th>
+                <th>Почта</th>
+                <th>Письмо отправлено</th>
+                <th>Заполнил</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody> 
+            {% for user in users %}
+            <tr> 
+                <td>{{ loop.index }} </td>
+                <td>{{ user.0 }}</td>
+                <td>{{ user.1 }}</td>
+                <td>{{ user.2 }}</td>
+                <td>{{ user.3 }}</td>
+                <td>{{ user.4 }}</td>
+                <td>{{ user.5 }}</td>
+                {% if user.6 is none %} <td>-</td> {% else %}  <td>{{ user.6 }} </td>{% endif %}
+                {% if user.7 is none %} <td>-</td> {% else %}  <td>да</td>{% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table> 
+
+     
+{% endblock %}
