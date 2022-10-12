@@ -41,7 +41,21 @@ def index():
     if session["user_status"] == constants.ADMIN or session["user_status"] == constants.COACH:
         return render_template('index.html')
     elif session["user_status"] == constants.MANAGER:
-        return render_template("/for_manager.html")
+        try:
+            connection = connection_db()
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * from questions")
+                data_questions = cursor.fetchall()
+                if len(data_questions) == 0:
+                    return render_template("/for_manager.html", questions = constants.QUESTIONS_LIST)
+                else:
+                    return render_template("/for_manager.html")
+        except Exception as _ex:
+            print("[INFO] Error while working with PostgresSQL", _ex)
+            return redirect('/')
+        finally:
+            if connection:
+                connection.close()
     else:
         return redirect("/login")
 
@@ -54,7 +68,12 @@ def login():
     msg = ""
     
     # User reached route via POST (as by submitting a form via POST)
-    if request.method == "POST":    
+    if request.method == "POST":  
+        session["user_id"] = ''
+        session["user_name"] = ''
+        session["user_status"] = ''
+        session["user_mail"] = ''
+        today = datetime.datetime.today().strftime("%d.%m.%Y %X")  
 
         if form.validate_on_submit() is False:
             msg = "Ошибка валидации"
@@ -64,6 +83,7 @@ def login():
         # Forget any user_id
         session.clear()
         # Ensure username was submitted
+        print("aaa")
         if not request.form.get("mail"):
             #flash('Вы не указали логин')
             return render_template('/login.html', form = form, msg = msg )
@@ -82,7 +102,6 @@ def login():
                 rows = cursor.fetchall()
                 # Ensure username exists and password is correct
                 password_req = request.form.get("hash").strip()
-                print(f'rows[0][7] - {rows[0][7]}, password_req - {password_req}')
                 if len(rows) != 1 or not check_password_hash(rows[0][7], password_req):
                     flash('Вы указали неверный логин или пароль')
                     return render_template('/login.html', form = form, msg = msg )
@@ -312,6 +331,41 @@ def edit():
         return redirect("/")
 
 
+@app.route("/answer_questions", methods = ["POST"])
+@login_required
+def answer_question():
+    answerList = []
+    for i in range(6):
+        answerList.append(request.form.get(f'answer_{i}'))
+        if not request.form.get(f'answer_{i}'):
+            flash('Заполните все поля')
+            return redirect('/')
+    try:
+        connection = connection_db()
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * from questions")
+            data_questions = cursor.fetchall()
+            if len(data_questions) == 0:
+                cursor.execute(
+                    "INSERT INTO questions (name, mail, answer_0, answer_1, \
+                    answer_2, answer_3, answer_4, answer_5) VALUES(%(name)s, %(mail)s,\
+                    %(answer_0)s, %(answer_1)s, %(answer_2)s, %(answer_3)s, %(answer_4)s,\
+                    %(answer_5)s)", \
+                    {'name': session['user_name'], 'mail': session['user_mail'], \
+                    'answer_0': answerList[0], 'answer_1': answerList[1], \
+                    'answer_2': answerList[2], 'answer_3': answerList[3], \
+                    'answer_4': answerList[4], 'answer_5': answerList[5]}
+                )
+
+    except Exception as _ex:
+        print("[INFO] Error while working with PostgresSQL", _ex)
+        return redirect('/')
+    finally:
+        if connection:
+            connection.close()
+    return redirect('/')
+
+
 @app.errorhandler(Exception)
 def handle_exception(e):   
     today = datetime.datetime.today().strftime("%d.%m.%Y %X")
@@ -324,7 +378,12 @@ def handle_exception(e):
         try:
             connection = connection_db()
             with connection.cursor() as cursor:
-                cursor.execute("INSERT INTO exception_table_sales (exception_code, exception_data, exception_date, user_mail, user_status) VALUES(%(code)s, %(name)s, %(today)s, %(user_mail)s, %(user_status)s)", {'name': name, 'code': code, 'today': today, 'user_mail': user_mail, 'user_status': user_status})
+                cursor.execute(
+                    "INSERT INTO exception_table_sales (exception_code, exception_data, \
+                    exception_date, user_mail, user_status) \
+                    VALUES(%(code)s, %(name)s, %(today)s, %(user_mail)s, %(user_status)s)", \
+                    {'name': name, 'code': code, 'today': today, 'user_mail': user_mail, 'user_status': user_status}
+                )
         except Exception as _ex:
             print("[INFO] Error while working with PostgresSQL", _ex)
             return redirect('/')
@@ -356,4 +415,5 @@ if __name__ == "__main__":
 
 #CREATE TABLE users_sales (id INTEGER PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY NOT NULL, department VARCHAR(150), reports_to VARCHAR(150), status VARCHAR(150), position VARCHAR(150), name VARCHAR(150), mail VARCHAR(150) UNIQUE, hash VARCHAR(300), mail_date VARCHAR(50), division VARCHAR(150), branch VARCHAR(150), accept_rules VARCHAR(50));
 #CREATE TABLE log_table_sales (ID INTEGER NOT NULL PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY, name VARCHAR(50), mail VARCHAR(50),status VARCHAR(50), date VARCHAR(50) );
-#CREATE TABLE exception_sales (ID INTEGER NOT NULL PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY, except VARCHAR(1000))
+#CREATE TABLE exception_table_sales (ID INTEGER NOT NULL PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY, exception_data VARCHAR(1000), exception_code VARCHAR(50), exception_date VARCHAR(50), user_mail VARCHAR(150), user_status VARCHAR(50))
+#CREATE TABLE questions (ID INTEGER NOT NULL PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY, name VARCHAR(50), mail VARCHAR(50), answer_0 VARCHAR(1000), answer_1 VARCHAR(1000), answer_2 VARCHAR(1000), answer_3 VARCHAR(1000), answer_4 VARCHAR(1000), answer_5 VARCHAR(1000))

@@ -61,7 +61,40 @@
 </div>
 <img class="instr" src="static/img_0.png" style=" width: 75%; height: auto;">
 <div>
-    
+    <p>На семинаре мы будем работать над вторым этапом – Нормирование/ Регламентирование и результатом нашей работы должен стать документ, содержащий описание бизнес-процесса продаж «СТАНДАРТЫ ПРОДАЖ» для Ваших ребят в поле и РОПов.</p>
 </div>
+{% if questions %}
+<div>
+    <p>Для того, чтобы работа на тренинге была эффективной, я прошу Вас уже сейчас погрузиться в тему и ответить на вопросы короткой анкеты.</p>
+
+    <p>Вопросы анкеты:</p>
+    {% for question in questions %}
+    <div class="mb-3">
+        <form action="/answer_questions" method="post">
+        <label for="exampleFormControlInput1" class="form-label">{{question}}</label>
+        <textarea required class="form-control" id="exampleFormControlTextarea1" rows="3" maxlength="950" name="answer_{{loop.index0}}"></textarea>
+    </div>
+      {%endfor%}
+      <p>Если Вы закончили, нажмите: Отправить»</p>
+      <button class="btn btn-primary" type="submit" onclick="return show_alert('Вы уверены, что ходите отправить?')">Отправить</button>
+      </form>
+</div>
+<div style="margin-top: 5%; margin-bottom: 5%;">
+      <form action="/mail_manager" method="post" onsubmit="return show_alert('Отправить сообщение?')">
+        <input type="hidden" value="mail_from_manager_start" name ="flag">
+        <label for="exampleFormControlTextarea1" class="form-label"><p>Если у Вас остались вопросы, Вы можете связаться с нами через форму: <br>
+            Мы ответим в течение дня обращения или на следующий день.</p></label>
+        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="messege_from_manager"></textarea>
+        <button class="btn btn-primary" type="submit" >Отправить сообщение</button>
+    </form>
+</div>
+<div>
+    <p>Для вопросов и общения используйте мой контакт:</p>
+    <img class="instr" src="static/whatsapp.jpg" style=" width: 25%; height: auto;">
+    <img class="instr" src="static/telegram.jpg" style=" width: 22.5%; height: auto;">
+</div>
+{%else%}
+
+{%endif%}
 
 {% endblock %}
