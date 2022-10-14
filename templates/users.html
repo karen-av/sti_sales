@@ -31,13 +31,12 @@
   
 <div style="display:none;" id="addUser" class="addUser">
     <form action="/register" method="post" name="register" onsubmit="return show_alert('Добавить пользователя?')">
-        <input style="width: 13%" autocomplete="off" id="department" name="department"  placeholder="Подразделение" type="text"  maxlength="30">
-        <input style="width: 13%" autocomplete="off" id="reports_to" name="reports_to"  placeholder="Email руководителя" type="email"  maxlength="30">
-        <input style="width: 7%" autocomplete="off" id="status" name="status" placeholder="Status" minlength="3" maxlength="30" required>
-        <input style="width: 10%" autocomplete="off" id="position" name="position" placeholder="Должность" minlength="3" maxlength="30" required>
-        <input style="width: 10%" autocomplete="off" id="name" name="name"  placeholder="ФИО" type="text" minlength="3" maxlength="30" required >
-        <input style="width: 10%" autocomplete="off" id="mail" name="mail"  placeholder="Почта" type="email" minlength="3" maxlength="30" required >
-        <input style="width: 10%" autocomplete="off" id="mail" name="password"  placeholder="Пароль" type="text" minlength="6" maxlength="30">
+        <input style="width: 13%" autocomplete="off" id="name" name="name"  placeholder="Имя" type="text"  maxlength="30" required>
+        <input style="width: 13%" autocomplete="off" id="branch" name="branch"  placeholder="Филиал" type="text"  maxlength="30" required>
+        <input style="width: 13%" autocomplete="off" id="position" name="position" placeholder="Должность" minlength="3" maxlength="30" required>
+        <input style="width: 13%" autocomplete="off" id="mail" name="mail"  placeholder="Почта" type="email" minlength="3" maxlength="30" required >
+        <input style="width: 13%" autocomplete="off" id="status" name="status" placeholder="Статус" minlength="3" maxlength="30" required>
+        <input style="width: 13%" autocomplete="off" id="mail" name="password"  placeholder="Пароль" type="text" minlength="6" maxlength="30">
         <button class="btn btn-primary" type="submit" id="button">Добавить</button>
     </form>
 </div>
@@ -48,12 +47,11 @@
     <thead >
         <tr >
             <th>N</th>
-            <th>Подразделение</th>
-            <th>Email руководителя</th>
-            <th>Статус</th>
-            <th>Должность</th>
             <th>ФИО</th>
+            <th>Филиал</th>
+            <th>Должность</th>
             <th>Почта</th>
+            <th>Статус</th>
             <th></th>
         </tr>
     </thead>
@@ -61,12 +59,11 @@
         {% for user in users %}
         <tr> 
             <td>{{ loop.index }}</td>
-            <td>{{ user.1 }}</td>
-            <td>{{ user.2 }}</td>
-            <td>{{ user.3 }}</td>
-            <td>{{ user.4 }}</td>
             <td>{{ user.5 }}</td>
+            <td>{{ user.10 }}</td>
+            <td>{{ user.4 }}</td>
             <td>{{ user.6 }}</td>
+            <td>{{ user.3 }}</td>
             <td>
                 <form action="/edit" method="post">
                     <input type="hidden" value="render" name ="flag">

@@ -12,7 +12,8 @@ from forms import ContactForm
 from werkzeug.exceptions import HTTPException
 import time
 import constants
-from decorator import connection_db, send_message_manager
+import pandas as pd
+from decorator import connection_db, send_message_manager, allowed_file, upload_file_users 
 
 #from flask_sqlalchemy import SQLAlchemy
 
@@ -79,7 +80,6 @@ def login():
         # Forget any user_id
         session.clear()
         # Ensure username was submitted
-        print("aaa")
         if not request.form.get("mail"):
             #flash('Вы не указали логин')
             return render_template('/login.html', form = form, msg = msg )
@@ -169,12 +169,12 @@ def logout():
 @login_required
 def register():
     if request.method == "POST" and (session["user_status"] == constants.ADMIN or session["user_status"] == constants.COACH):
-        department = request.form.get("department").strip()
-        reports_to = request.form.get("reports_to").strip()
-        status = request.form.get("status").strip()
-        position  = request.form.get("position").strip()
+        
         name = request.form.get("name").strip().strip()
+        branch = request.form.get("branch").strip()
+        position  = request.form.get("position").strip()
         mail = request.form.get("mail").lower().strip()
+        status = request.form.get("status").strip()
         user_password = request.form.get("password").strip()
         hash = ''
 
@@ -211,7 +211,11 @@ def register():
                 if len(us) != 0:
                     flash('Электронная почта уже зарегистрирована')
                     return redirect('/users')
-                cursor.execute("INSERT INTO users_sales (department, reports_to, status, position, name, mail, hash) VALUES(%(department)s, %(reports_to)s, %(status)s, %(position)s, %(name)s, %(mail)s, %(hash)s)", {'department': department, 'reports_to': reports_to, 'status': status, 'position': position, 'name': name, 'mail': mail, 'hash': hash})
+                cursor.execute(
+                    "INSERT INTO users_sales (name, branch, position, mail, status, hash) \
+                    VALUES(%(name)s, %(branch)s, %(position)s, %(mail)s, %(status)s, %(hash)s)", \
+                    {'name': name, 'branch': branch, 'position': position, 'mail': mail, 'status': status, 'hash': hash}
+                )
                 
         except Exception as _ex:
             print("[INFO] Error while working with PostgresSQL", _ex)
@@ -236,7 +240,7 @@ def edit():
             try:
                 connection = connection_db() 
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT id, department, reports_to, status, position, name, mail FROM users_sales WHERE id = %(userId)s", {'userId': userId})
+                    cursor.execute("SELECT id, name, branch, position, mail, status FROM users_sales WHERE id = %(userId)s", {'userId': userId})
                     userData = cursor.fetchall()
 
             except Exception as _ex:
@@ -247,25 +251,16 @@ def edit():
                 if connection:
                     connection.close()
                     print("[INFO] PostgresSQL connection closed")
-    
-            id = userData[0][0]
-            department = userData[0][1]
-            reports_to = userData[0][2]
-            status = userData[0][3]
-            position = userData[0][4]
-            name = userData[0][5]
-            mail = userData[0][6]
             
-            return render_template("edit.html", id = id, department = department, reports_to = reports_to, status = status, position = position, name = name, mail = mail, statusList = constants.STATUS_LIST, positionList = constants.POSITIONS_LIST)
+            return render_template("edit.html", userData = userData)
         
         elif request.form.get('flag') == 'save':
             id = request.form.get("id")
-            department = request.form.get("department").strip()
-            reports_to = request.form.get("reports_to").strip()
-            status = request.form.get("status").strip()
-            position  = request.form.get("position").strip()
             name = request.form.get("name").strip()
+            branch = request.form.get('branch').strip()
+            position  = request.form.get("position").strip()
             mail = request.form.get("mail").lower().strip()
+            status = request.form.get("status").strip()
             hash = request.form.get("hash").strip()
             if not status or not position or status == 'None' or position == 'None':
                 flash('Изменения не сохранены. Укажите статус и должность.')
@@ -285,7 +280,6 @@ def edit():
                     return redirect('/users')
                 hash = generate_password_hash(hash, "pbkdf2:sha256")
 
-
             try:
                 connection = connection_db()  
                 with connection.cursor() as cursor:
@@ -293,21 +287,22 @@ def edit():
                     cursor.execute("SELECT mail FROM users_sales WHERE mail = %(mail)s AND id != %(id)s", {'mail': mail, 'id': id})
                     us = cursor.fetchall()         
                     if len(us) != 0 :
-                        return apology("User exist", 400)
+                        return apology("User not exist", 400)
                     # внесение изменений
-                    # если меняли пароль b  если не меняли
+                    # если меняли пароль и  если не меняли
                     if hash:
-                        cursor.execute("UPDATE users_sales SET department = %(department)s, \
-                            reports_to = %(reports_to)s, status = %(status)s, position = %(position)s, \
-                            name = %(name)s, mail = %(mail)s, hash = %(hash)s  WHERE id = %(id)s", \
-                            {'department': department, 'reports_to': reports_to, 'status': status, \
-                            'position': position, 'name': name, 'mail': mail, 'hash': hash, 'id': id})
+                        cursor.execute("UPDATE users_sales SET name = %(name)s, branch = %(branch)s,\
+                            position = %(position)s, mail = %(mail)s, status = %(status)s, hash = %(hash)s \
+                            WHERE id = %(id)s", {'name': name, 'branch': branch, 'position': position, \
+                            'mail': mail, 'status': status, 'hash': hash, 'id': id}
+                        )
                     else:
-                        cursor.execute("UPDATE users_sales SET department = %(department)s, reports_to = %(reports_to)s, \
-                            status = %(status)s, position = %(position)s, name = %(name)s, mail = %(mail)s WHERE id = %(id)s", \
-                            {'department': department, 'reports_to': reports_to, 'status': status, 'position': position, \
-                            'name': name, 'mail': mail, 'id': id})
-                    
+                        print("AAA")
+                        cursor.execute("UPDATE users_sales SET name = %(name)s, branch = %(branch)s,\
+                            position = %(position)s, mail = %(mail)s, status = %(status)s \
+                            WHERE id = %(id)s", {'name': name, 'branch': branch, 'position': position, \
+                            'mail': mail, 'status': status, 'id': id}
+                        )
                     
             except Exception as _ex:
                 print("[INFO] Error while working with PostgresSQL", _ex)
@@ -327,11 +322,38 @@ def edit():
         return redirect("/")
 
 
+@app.route("/delete", methods = ["POST"])
+@login_required
+def delete():
+    if request.method == "POST" and (session["user_status"] == constants.ADMIN or session["user_status"] == constants.COACH):
+        id = request.form.get("id")
+
+        try:
+            connection = connection_db()
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM users_sales WHERE id = %(id)s", {'id': id})
+
+        except Exception as _ex:
+            print("[INFO] Error while working with PostgresSQL", _ex)
+            flash('Не удалось подключиться к базе данных. Попробуйте повторить попытку.')
+            return redirect('/')
+        finally:
+            if connection:
+                connection.close()
+                print("[INFO] PostgresSQL connection closed")
+
+        flash('Пользователь удален.')
+        return redirect("/users")
+    else:
+        return redirect("/")
+
+
+
 @app.route("/answer_questions", methods = ["POST"])
 @login_required
 def answer_question():
     answerList = []
-    for i in range(6):
+    for i in range(7):
         answerList.append(request.form.get(f'answer_{i}'))
         if not request.form.get(f'answer_{i}'):
             flash('Заполните все поля')
@@ -344,13 +366,13 @@ def answer_question():
             if len(data_questions) == 0:
                 cursor.execute(
                     "INSERT INTO questions (name, mail, answer_0, answer_1, \
-                    answer_2, answer_3, answer_4, answer_5) VALUES(%(name)s, %(mail)s,\
+                    answer_2, answer_3, answer_4, answer_5, answer_6) VALUES(%(name)s, %(mail)s,\
                     %(answer_0)s, %(answer_1)s, %(answer_2)s, %(answer_3)s, %(answer_4)s,\
-                    %(answer_5)s)", \
+                    %(answer_5)s, %(answer_6)s)", \
                     {'name': session['user_name'], 'mail': session['user_mail'], \
                     'answer_0': answerList[0], 'answer_1': answerList[1], \
                     'answer_2': answerList[2], 'answer_3': answerList[3], \
-                    'answer_4': answerList[4], 'answer_5': answerList[5]}
+                    'answer_4': answerList[4], 'answer_5': answerList[5], 'answer_6': answerList[6]}
                 )
                 today = datetime.datetime.today().strftime("%d.%m.%Y %X") 
                 mailUser = session['user_mail']
@@ -419,6 +441,37 @@ def mail_manager():
         return redirect('/')
 
 
+@app.route('/file_users', methods=["GET", "POST"])
+@login_required
+def file_users():
+    if request.method == "GET" and (session["user_status"] == constants.ADMIN or session["user_status"] == constants.COACH):
+        return render_template('upload_file.html', typeDataFlag = 'users')
+    
+    elif request.method == "POST" and (session["user_status"] == constants.ADMIN or session["user_status"] == constants.COACH):
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect('/')
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect('/')
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        xlsx = pd.ExcelFile(f'{Config.UPLOAD_FOLDER}/{filename}')
+        table = xlsx.parse()
+        upload_file_users(table, constants.MANAGER, constants.HEAD)
+        os.remove(f'{Config.UPLOAD_FOLDER}/{filename}')
+        flash(f"Загрузка идет в фоновом режиме")
+        return redirect ('/users')
+
+    else:
+        return redirect('/')
+
+
 @app.errorhandler(Exception)
 def handle_exception(e):   
     today = datetime.datetime.today().strftime("%d.%m.%Y %X")
@@ -469,4 +522,4 @@ if __name__ == "__main__":
 #CREATE TABLE users_sales (id INTEGER PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY NOT NULL, department VARCHAR(150), reports_to VARCHAR(150), status VARCHAR(150), position VARCHAR(150), name VARCHAR(150), mail VARCHAR(150) UNIQUE, hash VARCHAR(300), mail_date VARCHAR(50), division VARCHAR(150), branch VARCHAR(150), done_questions VARCHAR(50));
 #CREATE TABLE log_table_sales (ID INTEGER NOT NULL PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY, name VARCHAR(50), mail VARCHAR(50),status VARCHAR(50), date VARCHAR(50) );
 #CREATE TABLE exception_table_sales (ID INTEGER NOT NULL PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY, exception_data VARCHAR(1000), exception_code VARCHAR(50), exception_date VARCHAR(50), user_mail VARCHAR(150), user_status VARCHAR(50))
-#CREATE TABLE questions (ID INTEGER NOT NULL PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY, name VARCHAR(50), mail VARCHAR(50), answer_0 VARCHAR(1000), answer_1 VARCHAR(1000), answer_2 VARCHAR(1000), answer_3 VARCHAR(1000), answer_4 VARCHAR(1000), answer_5 VARCHAR(1000))
+#CREATE TABLE questions (ID INTEGER NOT NULL PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY, name VARCHAR(50), mail VARCHAR(50), answer_0 VARCHAR(1000), answer_1 VARCHAR(1000), answer_2 VARCHAR(1000), answer_3 VARCHAR(1000), answer_4 VARCHAR(1000), answer_5 VARCHAR(1000), answer_6 VARCHAR(1000))

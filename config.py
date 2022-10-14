@@ -1,10 +1,10 @@
 
 
 
-host = "ec2-34-193-44-192.compute-1.amazonaws.com"
-user = "vmfxqzwglzoagi"
-password = "8c83f577e40db85b6e810dfa0935f79f41f32c4c2414c89a9fa31f28957bf786"
-db_name = "dc2k8sqsffd92a"
+host = "ec2-54-170-90-26.eu-west-1.compute.amazonaws.com"
+user = "vzieytwebikdad"
+password = "a9363bb28e13d6fb310460e9190acb0cf34d2c049d097aa6dae43973f8036292"
+db_name = "d8i882gd7ls1fi"
 port = 5432
 
 

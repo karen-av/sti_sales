@@ -13,13 +13,13 @@
     <table class="table table-striped" style="margin-top: 2%;">
         <thead>
             <tr> 
-                <th>Подразделение</th>
-                <th >Email руководителя</th>
-                <th>Статус</th>
-                <th>Должность</th>
                 <th>ФИО</th>
+                <th>Филиал</th>
+                <th>Должность</th>
                 <th>Почта</th>
+                <th>Статус</th>
                 <th>Пароль</th>
+                <th></th>
             </tr>
         </thead>
     
@@ -27,13 +27,12 @@
             <form action="/edit" method="post" name="edit" onsubmit="return show_alert('Сохранить изменения?')">
             <tr> 
                 <input type="hidden" value="save" name ="flag">
-                <input type="hidden" value="{{ id }}" name ="id">
-                <td><input class="input edit" autocomplete="off" id="department" name="department"  value="{{ department }}" type="text"  minlength="" maxlength="30"></td>
-                <td><input class="input edit" autocomplete="off" id="reports_to" name="reports_to"  value="{{ reports_to }}" type="text"  minlength="" maxlength="30"></td>
-                <td><input class="input edit" autocomplete="off" id="status" name="status"  value="{{ status }}" type="text"  minlength="3" maxlength="30" required></td>
-                <td><input class="input edit" autocomplete="off" id="position" name="position"  value="{{ position }}" type="text"  minlength="3" maxlength="30" required></td>
-                <td><input class="input edit" autocomplete="off" id="name" name="name"  value="{{ name }}" type="text"  minlength="3" maxlength="30" required></td>
-                <td><input class="input edit" autocomplete="off" id="mail" name="mail"  value="{{ mail }}" type="email"  minlength="3" maxlength="30" required ></td>
+                <input type="hidden" value="{{ userData[0][0] }}" name ="id">
+                <td><input class="input edit" autocomplete="off" id="name" name="name"  value="{{ userData[0][1] }}" type="text"  minlength="" maxlength="30"></td>
+                <td><input class="input edit" autocomplete="off" id="branch" name="branch"  value="{{ userData[0][2] }}" type="text"  minlength="" maxlength="30"></td>
+                <td><input class="input edit" autocomplete="off" id="position" name="position"  value="{{ userData[0][3] }}" type="text"  minlength="3" maxlength="30" required></td>
+                <td><input class="input edit" autocomplete="off" id="mail" name="mail"  value="{{ userData[0][4] }}" type="text"  minlength="3" maxlength="30" required></td>
+                <td><input class="input edit" autocomplete="off" id="status" name="status"  value="{{ userData[0][5] }}" type="text"  minlength="3" maxlength="30" required></td>
                 <td><input class="input edit"autocomplete="off" id="hash" name="hash" type="text"  minlength="6" maxlength="30"></td>
             </tr>
         </tbody>
@@ -44,7 +43,7 @@
             </form>
                     <div>
                         <form action="/delete" method="post" name="delete" >
-                        <input type="hidden" value="{{ id }}" name ="id">
+                        <input type="hidden" value="{{ userData[0][0] }}" name ="id">
                         <button class="btn btn-primary"  type="submit" onclick="return show_alert('Удалить пользователя?')">Удалить</button>
                         </form>
                     </div>

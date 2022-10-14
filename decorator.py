@@ -74,3 +74,39 @@ def send_message_manager(status):
                 print(f"[INFO] PostgresSQL nonnection closed")
 
 
+@asyncc
+def upload_file_users(table, manager_status, head_status):    
+    with app.app_context():
+        try:
+            connection = connection_db()
+            connection.autocommit = True 
+            with connection.cursor() as cursor:
+                # Проходип по таблице и записываем сотрудников в базу
+                for i in range(len(table)):
+                    # Разбираем данные из считанных строк
+                    mail = str(table.iloc[i,:][4]).lower().strip()
+                    # Ищем в базе email 
+                    cursor.execute("SELECT * FROM users_sales WHERE mail = %(mail)s", {'mail': mail})
+                    us = cursor.fetchall()
+                    # # Если нет пользователя в базе, то записываем туда и добавляем в список
+                    if len(us) == 0:
+                        name = str(table.iloc[i,:][1])
+                        position = str(table.iloc[i,:][3]).strip()
+                        #division = str(table.iloc[i,:][5]).strip()
+                        #department = str(table.iloc[i,:][6]).strip()
+                        branch = str(table.iloc[i,:][2]).strip()
+                        #reports_to = str(table.iloc[i,:][9]).lower().strip()
+                        status = manager_status
+                        hash = generate_password_hash(createPassword(), "pbkdf2:sha256")
+                        cursor.execute(
+                                        "INSERT INTO users_sales ( name, mail, position, branch, status, hash) \
+                                        VALUES(%(name)s, %(mail)s, %(position)s, %(branch)s, %(status)s, %(hash)s)", \
+                                        {'name': name, 'mail': mail, 'position': position, 'branch': branch, \
+                                         'status': status, 'hash': hash}
+                                        )
+        except Exception as _ex:
+            print("[INFO] Error while working with PostgresSQL", _ex)
+        finally:
+            if connection:
+                connection.close()
+                print("[INFO] PostgresSQL connection closed")  

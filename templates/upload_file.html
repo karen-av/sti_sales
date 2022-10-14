@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Upload Test Results
+{% endblock %}
+
+{% block main %}
+
+{% if 'users' in typeDataFlag %}
+
+<div class="route">
+    <a href="/">Главная</a> - Загрузить сотрудников
+</div>
+<h5>Загрузите excel файл со списком сотрудников.</h5>
+<form action="/file_users" method="post" enctype=multipart/form-data class="">
+    <div class="input-group form_upload">
+        <input accept=".xlsx,.xls" name="file" type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+        <button class="btn btn-primary" type="sybmit" id="inputGroupFileAddon04">Загрузить</button>
+    </div>
+</form>
+
+{% elif 'results' in typeDataFlag %}
+<div class="route">
+    <a href="/">Главная</a> - Загрузите файл с результатами тестирования 'Дельта аи'
+</div>
+<h5>Загрузите excel файл с результатами тестирования.</h5>
+<form action="/file_test" method="post" enctype=multipart/form-data class="">
+    <div class="input-group form_upload">
+        <input accept=".xlsx,.xls" name="file" type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+        <button class="btn btn-primary" type="sybmit" id="inputGroupFileAddon04">Загрузить</button>
+    </div>
+</form>
+
+{% endif %}
+
+
+
+
+
+{% endblock %}
