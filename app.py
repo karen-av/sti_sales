@@ -602,30 +602,53 @@ def summary():
         return render_template('/summary_table.html',  allManagers = allManagers)
 
     elif request.method == 'POST' and (session['user_status'] == constants.ADMIN or session['user_status'] == constants.COACH):
-        mail = request.form.get('query')
-        if not mail:
-            flash("Укажите поисковой запрос и попробуйте выполнить поиск еще раз.")
-            return redirect('/summary')
+        flag = request.form.get('flag')
+        if flag == 'query':
+            mail = request.form.get('query')
+            if not mail:
+                flash("Укажите поисковой запрос и попробуйте выполнить поиск еще раз.")
+                return redirect('/summary')
 
-        try:
-            connection = connection_db()
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT * FROM questions WHERE mail = %(mail)s ORDER BY id", {'mail': mail})
-                allManagers = cursor.fetchall()
-                print(allManagers)
+            try:
+                connection = connection_db()
+                with connection.cursor() as cursor:
+                    cursor.execute("SELECT * FROM questions WHERE mail = %(mail)s ORDER BY id", {'mail': mail})
+                    allManagers = cursor.fetchall()
 
-        except Exception as _ex:
-            print("[INFO] Error while working with PostgresSQL", _ex)
-            flash('Не удалось подключиться к базе данных. Попробуйте повторить попытку.')
-            return redirect('/')
-        finally:
-            if connection:
-                connection.close()
-                print("[INFO] PostgresSQL connection closed")
+            except Exception as _ex:
+                print("[INFO] Error while working with PostgresSQL", _ex)
+                flash('Не удалось подключиться к базе данных. Попробуйте повторить попытку.')
+                return redirect('/')
+            finally:
+                if connection:
+                    connection.close()
+                    print("[INFO] PostgresSQL connection closed")
+            
+            # Передаем данные для создания страницы        
+            return render_template('/summary_table.html',  allManagers = allManagers)
         
-        # Передаем данные для создания страницы        
-        return render_template('/summary_table.html',  allManagers = allManagers)
+        elif flag == 'results':
+            user = request.form.get('user')
+            try:
+                connection = connection_db()
+                with connection.cursor() as cursor:
+                    cursor.execute("SELECT * FROM questions WHERE mail = %(mail)s ORDER BY id", {'mail': user})
+                    allManagers = cursor.fetchall()
 
+            except Exception as _ex:
+                print("[INFO] Error while working with PostgresSQL", _ex)
+                flash('Не удалось подключиться к базе данных. Попробуйте повторить попытку.')
+                return redirect('/')
+            finally:
+                if connection:
+                    connection.close()
+                    print("[INFO] PostgresSQL connection closed")
+            
+            # Передаем данные для создания страницы        
+            return render_template('/summary_table_results.html',  allManagers = allManagers)
+
+    else:
+        return redirect('/')
 
 @app.route('/download', methods=["GET", "POST"])
 @login_required

@@ -12,13 +12,16 @@
 <div class="box">
 <div>
     <form action="/summary" method="post" name="search">
+    <input type="hidden" name="flag" value="query">
     <div><input style="width: auto" autocomplete="off" id="query" name="query"  placeholder="почта для поиска" type="email"  maxlength="30" required></div>
     <div><button class="btn btn-primary" id="buttonAddHid" type="submit" style="display:block">Поиск</button></div>
     </form> 
     <div><form action="/summary" method="get" ><button class="btn btn-primary" type="submit" >Показать всех</button></form></div>
-</div></div>
+</div>
+</div>
 
-   
+<h3>Вариант 1</h3>
+
 <table class="table table-striped" style="table-layout: auto">
     <thead>
         <tr>
@@ -51,6 +54,19 @@
         </tr>{% endfor %}
     </tbody>
 </table>
+
+
+<h3 style="margin-top: 5%;">Вариант 2</h3>
+    
+        
+        {% for manager in allManagers %}
+     <form action="/summary" method="post">
+        <input type="hidden" name="flag" value="results">
+        <input name="user" value="{{manager.2}}" type="hidden">
+        <button class="btn btn-primary" type="submit" style="margin-bottom: 0.2%;">{{ manager.2}}</button>
+     </form><br>
+        {% endfor %}
+  
 
 
 

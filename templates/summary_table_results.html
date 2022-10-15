@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Сводная
+{% endblock %}
+
+{% block main %}
+
+<div class="route">
+    <a href="/">Главная</a> - Итоговая
+</div>
+
+{{ allManagers.0.1 }} {{allManagers.0.2}}
+<table class="table table-striped" style="table-layout: auto">
+    <thead>
+        <tr>
+            <td>Вопрос</td>
+            <td>Ответ</td> 
+          
+        </tr>
+    </thead>
+    <tbody>
+        
+        {% for manager in allManagers.0 %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{manager}}</td>
+          
+        </tr>{% endfor %}
+    </tbody>
+</table>
+
+
+
+    
+        
+  
+
+
+
+{% endblock %}
