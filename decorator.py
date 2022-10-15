@@ -104,12 +104,16 @@ def upload_file_users(table, manager_status, head_status):
                                         {'name': name, 'mail': mail, 'position': position, 'branch': branch, \
                                          'status': status, 'hash': hash}
                                         )
+                        cursor.execute(
+                                "INSERT INTO questions (name, mail) VALUES(%(name)s, %(mail)s)", {'name': name, 'mail': mail}
+                        )
         except Exception as _ex:
             print("[INFO] Error while working with PostgresSQL", _ex)
         finally:
             if connection:
                 connection.close()
                 print("[INFO] PostgresSQL connection closed")  
+
 
 def download_file_to_user(file_name):
     return send_file(file_name, as_attachment=False)

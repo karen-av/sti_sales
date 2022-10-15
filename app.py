@@ -47,9 +47,12 @@ def index():
         try:
             connection = connection_db()
             with connection.cursor() as cursor:
-                cursor.execute("SELECT * from questions")
+                cursor.execute("SELECT * FROM questions WHERE mail = %(mail)s AND (answer_0 IS NULL \
+                    OR answer_1 IS NULL OR answer_2 IS NULL OR answer_3 IS NULL \
+                    OR answer_4 IS NULL OR answer_5 IS NULL)", {'mail': session["user_mail"]})
                 data_questions = cursor.fetchall()
-                if len(data_questions) == 0:
+                print(data_questions)
+                if len(data_questions) != 0:
                     return render_template("/for_manager.html", questions = constants.QUESTIONS_LIST)
                 else:
                     return render_template("/for_manager.html")
@@ -236,6 +239,11 @@ def register():
                     VALUES(%(name)s, %(branch)s, %(position)s, %(mail)s, %(status)s, %(hash)s)", \
                     {'name': name, 'branch': branch, 'position': position, 'mail': mail, 'status': status, 'hash': hash}
                 )
+                if status == constants.MANAGER:
+                    cursor.execute(
+                        "INSERT INTO questions (name, mail) VALUES(%(name)s, %(mail)s)", \
+                        {'name': name, 'mail': mail}
+                    )
                 
         except Exception as _ex:
             print("[INFO] Error while working with PostgresSQL", _ex)
@@ -413,7 +421,10 @@ def delete():
         try:
             connection = connection_db()
             with connection.cursor() as cursor:
+                cursor.execute("SELECT mail FROM users_sales WHERE id = %(id)s", {'id': id})
+                mail = cursor.fetchall()[0][0]
                 cursor.execute("DELETE FROM users_sales WHERE id = %(id)s", {'id': id})
+                cursor.execute("DELETE FROM questions WHERE mail = %(mail)s", {'mail': mail})
 
         except Exception as _ex:
             print("[INFO] Error while working with PostgresSQL", _ex)
@@ -442,23 +453,18 @@ def answer_question():
     try:
         connection = connection_db()
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * from questions")
-            data_questions = cursor.fetchall()
-            if len(data_questions) == 0:
-                cursor.execute(
-                    "INSERT INTO questions (name, mail, answer_0, answer_1, \
-                    answer_2, answer_3, answer_4, answer_5, answer_6) VALUES(%(name)s, %(mail)s,\
-                    %(answer_0)s, %(answer_1)s, %(answer_2)s, %(answer_3)s, %(answer_4)s,\
-                    %(answer_5)s, %(answer_6)s)", \
-                    {'name': session['user_name'], 'mail': session['user_mail'], \
-                    'answer_0': answerList[0], 'answer_1': answerList[1], \
-                    'answer_2': answerList[2], 'answer_3': answerList[3], \
-                    'answer_4': answerList[4], 'answer_5': answerList[5], 'answer_6': answerList[6]}
-                )
-                today = datetime.datetime.today().strftime("%d.%m.%Y %X") 
-                mailUser = session['user_mail']
-                cursor.execute("UPDATE users_sales SET done_questions = %(done_questions)s \
-                    WHERE mail = %(mailUser)s", {'done_questions': today, 'mailUser': mailUser})
+            mailUser = session['user_mail']
+            cursor.execute(
+                "UPDATE questions SET answer_0 = %(answer_0)s, answer_1 = %(answer_1)s,  \
+                answer_2 = %(answer_2)s, answer_3 = %(answer_3)s, answer_4 = %(answer_4)s, \
+                answer_5 = %(answer_5)s, answer_6 = %(answer_6)s WHERE mail = %(mail)s",
+                {'answer_0': answerList[0], 'answer_1': answerList[1], 'answer_2': answerList[2],\
+                'answer_3': answerList[3], 'answer_4': answerList[4], 'answer_5': answerList[5], \
+                'answer_6': answerList[6], 'mail': mailUser}
+            )
+            today = datetime.datetime.today().strftime("%d.%m.%Y %X") 
+            cursor.execute("UPDATE users_sales SET done_questions = %(done_questions)s \
+                WHERE mail = %(mailUser)s", {'done_questions': today, 'mailUser': mailUser})
 
     except Exception as _ex:
         print("[INFO] Error while working with PostgresSQL", _ex)
