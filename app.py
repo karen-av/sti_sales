@@ -661,10 +661,11 @@ def download():
         
         writer = pd.ExcelWriter(file_name)
         df.to_excel(writer, sheet_name='sheet_1', index=False)
-        for column in df:
-            column_width = max(df[column].astype(str).map(len).max(), len(column))
-            col_idx = df.columns.get_loc(column)
-            writer.sheets['sheet_1'].set_column(col_idx, col_idx, column_width)
+        if request.form.get('var') == 'var1':
+            for column in df:
+                column_width = max(df[column].astype(str).map(len).max(), len(column))
+                col_idx = df.columns.get_loc(column)
+                writer.sheets['sheet_1'].set_column(col_idx, col_idx, column_width)
         writer.save()
         
         x = download_file_to_user(file_name)

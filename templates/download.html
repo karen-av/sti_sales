@@ -22,7 +22,14 @@
 
     <form action="/download" method="post">
         <input type="hidden" value="summary" name="download_file">
-        <button class="btn btn-primary">Скачать итоговую таблицу</button>
+        <input type="hidden" value="var1" name="var">
+        <button class="btn btn-primary">Скачать итоговую таблицу (вариант 1)</button>
+    </form>
+    <p></p>
+    <form action="/download" method="post">
+        <input type="hidden" value="summary" name="download_file">
+        <input type="hidden" value="var2" name="var">
+        <button class="btn btn-primary">Скачать итоговую таблицу  (вариант 2)</button>
     </form>
     <p></p>
     
