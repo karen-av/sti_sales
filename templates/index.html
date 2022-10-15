@@ -31,10 +31,9 @@
         <button class="btn btn-primary">Отправить сообщение участиникам</button>
     </form>
     <p></p>
-    <form action="/not_done" method="get">
-        <button class="btn btn-primary">Зашли и не выполнили</button>
+    <form action="/summary" method="get">
+        <button class="btn btn-primary">Итоговая</button>
     </form>
-   
     <p></p>
     <form action="/settings" method="get">
         <button class="btn btn-primary">Настройки</button>
@@ -43,6 +42,7 @@
     <form action="/download" method="get">
         <button class="btn btn-primary">Скачать</button>
     </form>
+    <p></p>
     {%if status == 'admin'%}
     <p></p>
     <form action="/log_table" method="get">

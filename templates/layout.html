@@ -31,7 +31,7 @@
         <nav class="bg-light border navbar navbar-expand-md navbar-light">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/" style=" margin-left: 2%"><img src="/static/STI_logo.jpg" width="200" height="100" ></a>
-                <h3 style="color: rgb(14, 20, 130); margin-left: 2%">Проект «Стандарты продаж»</h3>  
+                <h3 style="color: rgb(14, 20, 130); margin-left: 2%;">Проект «Стандарты продаж»</h3>  
                 <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse" type="button">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -39,18 +39,12 @@
                
                 <div class="collapse navbar-collapse" id="navbar">
                     {% if session["user_id"] %}
-                        <ul class="navbar-nav me-auto mt-2">
-                            
-                            
-                        </ul>
                         <ul class="navbar-nav ms-auto mt-2">
                             <li class="nav-item"><a class="nav-link" href="/">Главная</a></li>
                             <li class="nav-item"><a class="nav-link"> {{ session["user_name"] }} </a></li>
                             <li class="nav-item"><a class="nav-link" href="/logout">Выйти</a></li>
                         </ul>
                     {% else %}
-                    
-                    
                         <ul class="navbar-nav ms-auto mt-2">
                             <li class="nav-item"><a class="nav-link" href="/reset_password">Восcтановить пароль</a></li>
                             <li class="nav-item"><a class="nav-link" href="/login">Войти</a></li>

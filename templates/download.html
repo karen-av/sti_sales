@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Главная
+{% endblock %}
+
+{% block main %}
+<head>
+    <style>
+        button {width: 350px;}
+        
+    </style>
+</head>
+
+<div class="route">
+    <a href="/">Главная</a> - Скачать
+</div>
+
+
+<div style="width: 100%;">
+   
+
+    <form action="/download" method="post">
+        <input type="hidden" value="summary" name="download_file">
+        <button class="btn btn-primary">Скачать итоговую таблицу</button>
+    </form>
+    <p></p>
+    
+</div>
+{%endblock%}

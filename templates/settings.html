@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Сообщения
+{% endblock %}
+
+{% block main %}
+
+<head>
+    <style>
+        button {width: 350px;}
+    </style>
+</head>
+
+<div class="route">
+    <a href="/">Главная</a> - Настройки
+</div>
+
+<h5 style="margin-bottom: 1%;">Так выглядят письма участникам:</h5>
+
+<div style="width: 100%;">
+    <p></p>
+    <form action="/settings" method="post">
+        <input type="hidden" name="invite_manager" value="1"></input>
+        <button class="btn btn-primary">Приглашение сотруднику</button>
+    </form>
+    <p></p>
+    <form action="/settings" method="post">
+        <input type="hidden" name="reminder_manager" value="1"></input>
+        <button class="btn btn-primary">Напоминание сотруднику</button>
+    </form>
+    <p></p>
+    <form action="/settings" method="post">
+        <input type="hidden" name="res_password" value="1"></input>
+        <button class="btn btn-primary">Восстановение пароля</button>
+    </form>
+</div>
+
+
+
+{% endblock %}

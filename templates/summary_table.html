@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Сводная
+{% endblock %}
+
+{% block main %}
+
+<div class="route">
+    <a href="/">Главная</a> - Итоговая
+</div>
+<div class="box">
+<div>
+    <form action="/summary" method="post" name="search">
+    <div><input style="width: auto" autocomplete="off" id="query" name="query"  placeholder="почта для поиска" type="email"  maxlength="30" required></div>
+    <div><button class="btn btn-primary" id="buttonAddHid" type="submit" style="display:block">Поиск</button></div>
+    </form> 
+    <div><form action="/summary" method="get" ><button class="btn btn-primary" type="submit" >Показать всех</button></form></div>
+</div></div>
+
+   
+<table class="table table-striped" style="table-layout: auto">
+    <thead>
+        <tr>
+            <td>N</td>
+            <td>Имя</td> 
+            <td>Почта</td>
+            <td>Вопрос 1</td>
+            <td>Вопрос 2</td>
+            <td>Вопрос 3</td>
+            <td>Вопрос 4</td>
+            <td>Вопрос 5</td>
+            <td>Вопрос 6</td>
+            <td>Вопрос 7</td>
+        </tr>
+    </thead>
+    <tbody>
+        
+        {% for manager in allManagers %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{manager.1}}</td>
+            <td>{{manager.2}}</td>
+            <td>{{manager.3}}</td>
+            <td>{{manager.4}}</td>
+            <td>{{manager.5}}</td>
+            <td>{{manager.6}}</td>
+            <td>{{manager.7}}</td>
+            <td>{{manager.8}}</td>
+            <td>{{manager.9}}</td>
+        </tr>{% endfor %}
+    </tbody>
+</table>
+
+
+
+{% endblock %}

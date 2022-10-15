@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, send_file
 from flask_mail import Message, Mail
 from threading import Thread
 import psycopg2
@@ -110,3 +110,21 @@ def upload_file_users(table, manager_status, head_status):
             if connection:
                 connection.close()
                 print("[INFO] PostgresSQL connection closed")  
+
+def download_file_to_user(file_name):
+    return send_file(file_name, as_attachment=False)
+
+def create_table_to_download():
+    try:
+        connection = connection_db()
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM questions")
+            positions = cursor.fetchall()
+            return positions
+
+    except Exception as _ex:
+        print(f'[INFO] create_positions_table_to_download: {_ex}')
+    finally:
+        if connection:
+            connection.close()
+

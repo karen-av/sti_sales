@@ -13,7 +13,8 @@ from werkzeug.exceptions import HTTPException
 import time
 import constants
 import pandas as pd
-from decorator import connection_db, send_message_manager, allowed_file, upload_file_users 
+from decorator import connection_db, send_message_manager, allowed_file, upload_file_users, download_file_to_user,\
+    create_table_to_download
 
 #from flask_sqlalchemy import SQLAlchemy
 
@@ -40,7 +41,8 @@ def after_request(response):
 @login_required
 def index():
     if session["user_status"] == constants.ADMIN or session["user_status"] == constants.COACH:
-        return render_template('index.html')
+        status = session["user_status"]
+        return render_template('index.html', status = status)
     elif session["user_status"] == constants.MANAGER:
         try:
             connection = connection_db()
@@ -133,23 +135,41 @@ def login():
 @app.route("/users", methods=["GET", "POST"])
 @login_required
 def users():
-    if request.method == "GET":
-        if session["user_status"] == constants.ADMIN or session["user_status"] == constants.COACH:
-            try:
-                connection = connection_db()
-                with connection.cursor() as cursor:
-                    cursor.execute("SELECT * FROM users_sales ORDER BY id;")
-                    users = cursor.fetchall()
-            except Exception as _ex:
-                print("[INFO] Error while working with PostgresSQL", _ex)
-                flash('Не удалось подключиться к базе данных. Попробуйте повторить попытку.')
-                return redirect('/')
-            finally:
-                if connection:
-                    connection.close()
-                    print("[INFO] PostgresSQL connection closed")
-            return render_template("users.html", users = users)
+    if request.method == "GET" and (session["user_status"] == constants.ADMIN or session["user_status"] == constants.COACH):
+        try:
+            connection = connection_db()
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM users_sales ORDER BY id;")
+                users = cursor.fetchall()
+        except Exception as _ex:
+            print("[INFO] Error while working with PostgresSQL", _ex)
+            flash('Не удалось подключиться к базе данных. Попробуйте повторить попытку.')
+            return redirect('/')
+        finally:
+            if connection:
+                connection.close()
+                print("[INFO] PostgresSQL connection closed")
+        return render_template("users.html", users = users)
 
+    elif request.method == 'POST' and (session["user_status"] == constants.ADMIN or session["user_status"] == constants.COACH):
+        mail = request.form.get('query')
+        if not mail:
+            flash("Укажите поисковой запрос и попробуйте выполнить поиск еще раз.")
+            return redirect('/users')
+        try:
+            connection = connection_db()
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM users_sales WHERE mail = %(mail)s ORDER BY id", {'mail': mail})
+                users = cursor.fetchall()
+        except Exception as _ex:
+            print("[INFO] Error while working with PostgresSQL", _ex)
+            flash('Не удалось подключиться к базе данных. Попробуйте повторить попытку.')
+            return redirect('/')
+        finally:
+            if connection:
+                connection.close()
+                print("[INFO] PostgresSQL connection closed")
+        return render_template("users.html", users = users)
     else:
         return redirect('/')
 
@@ -322,6 +342,68 @@ def edit():
         return redirect("/")
 
 
+@app.route('/reset_password', methods = ['GET', 'POST'])
+def reset_password():
+    form = ContactForm()
+    msg_cap = ""
+    if request.method == 'GET':
+        return render_template('/reset_password.html', form = form, msg = msg_cap)
+
+    elif request.method == 'POST':
+        if form.validate_on_submit() is False:
+            msg_cap = "Ошибка валидации"
+            flash("Вы робот?")
+            return render_template('/reset_password.html', form = form, msg = msg_cap )
+
+        user_name = request.form.get('username')
+        if user_name:
+            try:
+                connection = connection_db()
+                with connection.cursor() as cursor:
+                    # Проверка на существование пользователя
+                    cursor.execute("SELECT mail, name, status FROM users_sales WHERE mail = %(mail)s", {'mail': user_name})
+                    us = cursor.fetchall()
+                    #status = us[0][2]
+                    if len(us) == 1: #and (status == constants.COACH or status == constants.ADMIN or status == constants.HEAD):
+                        user_password = createPassword()
+                        hash = generate_password_hash(user_password, "pbkdf2:sha256")
+                        user_name = us[0][0]
+                        name = us[0][1]
+                        try:
+                            msg = Message('From STI-Partners', recipients=[user_name])
+                            msg.body = render_template("mail_reset_password.txt", user_name = name, user_password = user_password)
+                            msg.html = render_template("mail_reset_password.html", user_name = name, user_password = user_password)
+                            mail.send(msg)
+
+                        except Exception as _ex:
+                            print('[INFO] Error while working mail sender', _ex)
+                            flash("В процессе создания запроса произошла ошибка. Пожалуйста, обновите страницу и повторите попытку.")
+                            return render_template('/reset_password.html', form = form, msg = msg_cap )
+
+                        cursor.execute("UPDATE users_sales SET hash = %(hash)s WHERE mail = %(mail)s", {'hash': hash, 'mail': user_name})
+                        flash('Проверьте свою электронную почту. Если ваш email зарегистрирован в систему, то вы получите письмо с данными для входа.')
+                        return render_template('/login.html', form = form, msg = msg_cap)
+
+                    else:
+                        flash('Проверьте свою электронную почту. Если ваш email зарегистрирован в систему, то вы получите письмо с данными для входа.')
+                        return render_template('/login.html', form = form, msg = msg_cap)
+
+            except Exception as _ex:
+                print("[INFO] Error while working with PostgresSQL", _ex)
+                flash("В процессе создания запроса произошла ошибка. Пожалуйста, обновите страницу и повторите попытку.")
+                return render_template('reset_password.html', form = form, msg = msg_cap)
+            finally:
+                if connection:
+                    connection.close()
+                    print("[INFO] PostgresSQL connection closed")
+        else:
+            flash('Укажите адрес электронной почты и повторите запрос')
+            return redirect('reset_password', form = form, msg = msg_cap)
+
+    else:
+        return redirect('/')
+
+
 @app.route("/delete", methods = ["POST"])
 @login_required
 def delete():
@@ -346,7 +428,6 @@ def delete():
         return redirect("/users")
     else:
         return redirect("/")
-
 
 
 @app.route("/answer_questions", methods = ["POST"])
@@ -470,6 +551,129 @@ def file_users():
 
     else:
         return redirect('/')
+
+
+@app.route('/settings', methods = ["GET", "POST"])
+@login_required
+def settings():
+    if request.method == 'GET' and (session['user_status'] == constants.ADMIN or session['user_status'] == constants.COACH):
+        return render_template('/settings.html')
+    if request.method == 'POST' and (session['user_status'] == constants.ADMIN or session['user_status'] == constants.COACH):
+        invite_manager = request.form.get('invite_manager') 
+        reminder_manager = request.form.get('reminder_manager')
+        res_password = request.form.get('res_password')
+        user_name = 'Иван Иванович'
+        user_mail = 'ivan@example.com'
+        user_password = 'xxxxxxxx'
+
+        if invite_manager:
+            return render_template('to_manager_email.html', user_name = user_name, user_mail = user_mail, user_password = user_password)
+        if reminder_manager:
+            return render_template('reminder_to_manager.html', user_name = user_name, user_mail = user_mail, user_password = user_password)
+        if res_password:
+            return render_template('mail_reset_password.html', user_name = user_name, user_mail = user_mail, user_password = user_password)
+        else:
+            return redirect ('/settings')
+    else:
+        return redirect ('/')
+
+
+@app.route('/summary', methods = ['GET', 'POST'])
+@login_required
+def summary():
+    if request.method == 'GET' and (session['user_status'] == constants.ADMIN or session['user_status'] == constants.COACH):
+        try:
+            connection = connection_db()
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM questions ORDER BY id")
+                allManagers = cursor.fetchall()
+                print(allManagers)
+
+        except Exception as _ex:
+            print("[INFO] Error while working with PostgresSQL", _ex)
+            flash('Не удалось подключиться к базе данных. Попробуйте повторить попытку.')
+            return redirect('/')
+        finally:
+            if connection:
+                connection.close()
+                print("[INFO] PostgresSQL connection closed")
+        
+        # Передаем данные для создания страницы        
+        return render_template('/summary_table.html',  allManagers = allManagers)
+
+    elif request.method == 'POST' and (session['user_status'] == constants.ADMIN or session['user_status'] == constants.COACH):
+        mail = request.form.get('query')
+        if not mail:
+            flash("Укажите поисковой запрос и попробуйте выполнить поиск еще раз.")
+            return redirect('/summary')
+
+        try:
+            connection = connection_db()
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM questions WHERE mail = %(mail)s ORDER BY id", {'mail': mail})
+                allManagers = cursor.fetchall()
+                print(allManagers)
+
+        except Exception as _ex:
+            print("[INFO] Error while working with PostgresSQL", _ex)
+            flash('Не удалось подключиться к базе данных. Попробуйте повторить попытку.')
+            return redirect('/')
+        finally:
+            if connection:
+                connection.close()
+                print("[INFO] PostgresSQL connection closed")
+        
+        # Передаем данные для создания страницы        
+        return render_template('/summary_table.html',  allManagers = allManagers)
+
+
+@app.route('/download', methods=["GET", "POST"])
+@login_required
+def download():
+    if request.method == "GET" and (session['user_status'] == constants.ADMIN or session['user_status'] == constants.COACH):
+        return render_template("download.html")
+    elif request.method == "POST" and (session['user_status'] == constants.ADMIN or session['user_status'] == constants.COACH):
+        today = datetime.datetime.now()
+        if request.form.get('download_file') == 'summary':
+            data_to_download = create_table_to_download()
+            file_name = 'Анкета Стандарты продаж.xlsx'
+            col0, col1, col2, col3, col4, col5, col6, col7, col8, col9 = \
+                '', "Имя", "Почта", "Вопрос 1", "Вопрос 2", "Вопрос 3", "Вопрос 4", \
+                "Вопрос 5", "Вопрос 6", "Вопрос 7"
+                    
+            number, nameList,  mailList, quest1, quest2, quest3, quest4, quest5, quest6, quest7 = \
+                    [], [], [], [], [], [], [], [], [], []
+            for i, user in enumerate(data_to_download, start=1):
+                number.append(i)
+                nameList.append(user[1])
+                mailList.append(user[2])
+                quest1.append(user[3])
+                quest2.append(user[4])
+                quest3.append(user[5])
+                quest4.append(user[6])
+                quest5.append(user[7])
+                quest6.append(user[8])
+                quest7.append(user[9])
+
+            df = pd.DataFrame({col0: number, col1: nameList, col2: mailList, \
+                col3: quest1, col4: quest2, col5: quest3, col6: quest4, \
+                col7: quest5, col8: quest6, col9: quest7})
+        
+        writer = pd.ExcelWriter(file_name)
+        df.to_excel(writer, sheet_name='sheet_1', index=False)
+        for column in df:
+            column_width = max(df[column].astype(str).map(len).max(), len(column))
+            col_idx = df.columns.get_loc(column)
+            writer.sheets['sheet_1'].set_column(col_idx, col_idx, column_width)
+        writer.save()
+        
+        x = download_file_to_user(file_name)
+        os.remove(file_name)
+        time =  datetime.datetime.now() - today
+        print(f'Time - {time}')
+        return x
+    else:
+        return redirect ('/')
 
 
 @app.errorhandler(Exception)
