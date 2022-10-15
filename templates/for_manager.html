@@ -12,6 +12,8 @@
         text-align: left;
         margin-top: 20px;
         margin: auto;
+        margin-left: 10%;
+        margin-right: 10%;
         }
 
         
@@ -49,7 +51,7 @@
     {% for question in questions %}
     <div style="margin-top: 3%;">
         <form action="/answer_questions" method="post">
-        <p>{{question}}</p>
+        <p>{{loop.index}}.  {{question}}</p>
         <textarea required class="form-control" id="exampleFormControlTextarea1" rows="3" maxlength="950" name="answer_{{loop.index0}}"></textarea>
     </div>
       {%endfor%}
@@ -61,8 +63,8 @@
 
 <div style="margin-top: 3%;">
     <p>Для вопросов и общения используйте мой контакт:</p>
-    <img class="instr" src="static/whatsapp.jpg" style=" width: 15%; height: auto;">
-    <img class="instr" src="static/telegram.jpg" style=" width: 15%; height: auto;">
+    <img class="instr" src="static/whatsapp.jpg" style=" width: 10%; height: auto;">
+    <img class="instr" src="static/telegram.jpg" style=" width: 10%; height: auto;">
 </div>
 
 {% endblock %}
