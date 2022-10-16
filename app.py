@@ -51,7 +51,6 @@ def index():
                     OR answer_1 IS NULL OR answer_2 IS NULL OR answer_3 IS NULL \
                     OR answer_4 IS NULL OR answer_5 IS NULL)", {'mail': session["user_mail"]})
                 data_questions = cursor.fetchall()
-                print(data_questions)
                 if len(data_questions) != 0:
                     return render_template("/for_manager.html", questions = constants.QUESTIONS_LIST)
                 else:
@@ -317,6 +316,10 @@ def edit():
                     if len(us) != 0 :
                         return apology("User not exist", 400)
                     # внесение изменений
+                    cursor.execute("UPDATE questions SET name = %(name)s, mail = %(mail)s \
+                        WHERE mail in (SELECT mail FROM users_sales WHERE id = %(id)s)", \
+                        {'mail': mail, 'name': name, 'id': id}
+                    )
                     # если меняли пароль и  если не меняли
                     if hash:
                         cursor.execute("UPDATE users_sales SET name = %(name)s, branch = %(branch)s,\
@@ -325,12 +328,13 @@ def edit():
                             'mail': mail, 'status': status, 'hash': hash, 'id': id}
                         )
                     else:
-                        print("AAA")
                         cursor.execute("UPDATE users_sales SET name = %(name)s, branch = %(branch)s,\
                             position = %(position)s, mail = %(mail)s, status = %(status)s \
                             WHERE id = %(id)s", {'name': name, 'branch': branch, 'position': position, \
                             'mail': mail, 'status': status, 'id': id}
                         )
+                    
+                    
                     
             except Exception as _ex:
                 print("[INFO] Error while working with PostgresSQL", _ex)
@@ -447,7 +451,7 @@ def answer_question():
     answerList = []
     for i in range(7):
         answerList.append(request.form.get(f'answer_{i}'))
-        if not request.form.get(f'answer_{i}'):
+        if not request.form.get(f'answer_{i}') and i != 6:
             flash('Заполните все поля')
             return redirect('/')
     try:
@@ -593,7 +597,6 @@ def summary():
             with connection.cursor() as cursor:
                 cursor.execute("SELECT * FROM questions ORDER BY id")
                 allManagers = cursor.fetchall()
-                print(allManagers)
 
         except Exception as _ex:
             print("[INFO] Error while working with PostgresSQL", _ex)
