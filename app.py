@@ -312,14 +312,31 @@ def edit():
                 with connection.cursor() as cursor:
                     # Проверка на существование пользователя
                     cursor.execute("SELECT mail FROM users_sales WHERE mail = %(mail)s AND id != %(id)s", {'mail': mail, 'id': id})
-                    us = cursor.fetchall()         
+                    us = cursor.fetchall()        
                     if len(us) != 0 :
                         return apology("User not exist", 400)
                     # внесение изменений
+
+                    #   Если статус пользователя изменили на манагер, то добавляем его данные в таблицу с влпросами
+                    cursor.execute("SELECT status, mail FROM users_sales WHERE id = %(id)s", {'id': id})
+                    oldStatus = cursor.fetchall()[0][0]
+
+                    if status == constants.MANAGER and oldStatus != status:
+                        cursor.execute("INSERT INTO questions (name, mail) VALUES(%(name)s, %(mail)s)", \
+                            {'name': name, 'mail': mail}
+                        )
+
+                    #Если статус пользователя был манагер и его поменяли, то удаляем данный пользователя
+                    # из таблички questions  
+                    if oldStatus == constants.MANAGER and status != oldStatus:
+                        cursor.execute("DELETE FROM questions WHERE mail IN (SELECT mail FROM users_sales WHERE id = %(id)s)", {'id': id})
+
+                    # меняем имя и почту в таблице с вопросами, если там есть такой пользователь
                     cursor.execute("UPDATE questions SET name = %(name)s, mail = %(mail)s \
                         WHERE mail in (SELECT mail FROM users_sales WHERE id = %(id)s)", \
                         {'mail': mail, 'name': name, 'id': id}
                     )
+
                     # если меняли пароль и  если не меняли
                     if hash:
                         cursor.execute("UPDATE users_sales SET name = %(name)s, branch = %(branch)s,\
@@ -658,6 +675,7 @@ def summary():
 
     else:
         return redirect('/')
+
 
 @app.route('/download', methods=["GET", "POST"])
 @login_required
