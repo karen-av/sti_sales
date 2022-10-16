@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Log
+{% endblock %}
+
+{% block main %}
+<button class="btn btn-primary" type="button"  onclick="funcShowLog()">Log</button>
+<button class="btn btn-primary"  type="button" onclick="funcShowErr()">Error</button>
+
+<!-- <div id="err" style="display: none;">
+{% for row in exception_table %}
+<p>{{ row }}</p>
+{% endfor %}
+</div> -->
+
+<div id="err" style="display: none;">
+    <table>
+    <thead>
+        <tr>
+            <th>Оштбка</th>
+            <th>Номер</th>
+            <th>Пользователь</th>
+            <th>Статус</th>
+            <th>Дата (МСК)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            {% for row in exception_table %}
+            <td>{{ row.0 }}</td>
+            <td>{{ row.1 }}</td>
+            <td>{{ row.2 }}</td>
+            <td>{{ row.3 }}</td>
+            <td>{{ row.4 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<!-- <div id="log" style="display: none;">
+{% for row in log_data %}
+<p>{{row}}</p>
+{% endfor %}
+</div> -->
+
+<div id="log" style="display: none;">
+    <table>
+    <thead>
+        <tr>
+            <th>Пользователь</th>
+            <th>Почта</th>
+            <th>Статус</th>
+            <th>Дата (МСК)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            {% for row in log_data %}
+            <td>{{ row.0 }}</td>
+            <td>{{ row.1 }}</td>
+            <td>{{ row.2 }}</td>
+            <td>{{ row.3 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<script>
+    function funcShowLog() {
+        document.getElementById("log").style.display = "block";
+        document.getElementById("err").style.display = "none";
+    }
+
+    function funcShowErr() {
+        document.getElementById("err").style.display = "block";
+        document.getElementById("log").style.display = "none";
+    }
+</script>
+
+{% endblock %}

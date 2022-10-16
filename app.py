@@ -709,6 +709,31 @@ def download():
         return redirect ('/')
 
 
+@app.route('/log_table')
+@login_required
+def log_table():
+    if session['user_status'] == constants.ADMIN:
+        try:
+            connection = connection_db()
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT name, mail, status, date FROM log_table_sales ORDER BY id DESC")
+                log_data = cursor.fetchall()
+                cursor.execute("SELECT exception_data, exception_code, user_mail, user_status, \
+                    exception_date FROM exception_table_sales ORDER BY id DESC")
+                exception_table = cursor.fetchall()
+                return render_template('log_table.html', log_data = log_data, exception_table = exception_table)
+        except Exception as _ex:
+            print("[INFO] Error while working with PostgresSQL", _ex)
+            flash('Не удалось подключиться к базе данных. Попробуйте повторить попытку.')
+            return redirect('/')
+        finally:
+            if connection:
+                connection.close()
+                print("[INFO] PostgresSQL connection closed")
+    else:
+        return redirect('/')
+
+
 @app.errorhandler(Exception)
 def handle_exception(e):   
     today = datetime.datetime.today().strftime("%d.%m.%Y %X")
