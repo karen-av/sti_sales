@@ -376,18 +376,23 @@ def edit():
 
 @app.route('/reset_password', methods = ['GET', 'POST'])
 def reset_password():
-    #form = ContactForm()
-    #msg_cap = ""
+    
     if request.method == 'GET':
-        return render_template('/reset_password.html')
-        #return render_template('/reset_password.html', form = form, msg = msg_cap)
+        return render_template('/reset_password.html', key = constants.RECAPTCHA_PUBLIC_KEY)
 
-    elif request.method == 'POST':
-        #if form.validate_on_submit() is False:
-         #   msg_cap = "Ошибка валидации"
-          #  flash("Вы робот?")
-           # return render_template('/reset_password.html', form = form, msg = msg_cap )
-
+    elif request.method == 'POST':   
+        token = request.form.get("id_token")
+        # запрос данных у google
+        responseCaptcha = json.loads(requests.post('https://www.google.com/recaptcha/api/siteverify', 
+            data=dict(secret=constants.RECAPTCHA_PRIVATE_KEY, response=token)).text)
+        
+        if responseCaptcha['success'] == True and responseCaptcha['score'] < 0.6:
+            return render_template("reset_password.html", key = constants.RECAPTCHA_PUBLIC_KEY, form = ContactForm())
+        
+        if request.form.get('recaptcha') == 'recaptcha_2' and ContactForm().validate_on_submit() is False:
+            flash("Вы робот?")
+            return render_template("reset_password.html", key = constants.RECAPTCHA_PUBLIC_KEY, form = ContactForm())
+        
         user_name = request.form.get('username')
         if user_name:
             try:
@@ -430,8 +435,8 @@ def reset_password():
                     connection.close()
                     print("[INFO] PostgresSQL connection closed")
         else:
-            flash('Укажите адрес электронной почты и повторите запрос')
-            return redirect('reset_password')
+            flash('Укажите адрес электронной почты и повторите запрос.')
+            return redirect('/reset_password')
 
     else:
         return redirect('/')
