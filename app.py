@@ -78,12 +78,13 @@ def login():
         # запрос данных у google
         responseCaptcha = json.loads(requests.post('https://www.google.com/recaptcha/api/siteverify', 
             data=dict(secret=constants.RECAPTCHA_PRIVATE_KEY, response=token)).text)
-        
-        if responseCaptcha['success'] == True and responseCaptcha['score'] < 0.6:
+        print(responseCaptcha)
+        if responseCaptcha['success'] == True and responseCaptcha['score'] < constants.MIN_SCORE:
+            flash('Пожалуйста, подтвердите, что вы не робот.')
             return render_template("login.html", key = constants.RECAPTCHA_PUBLIC_KEY, form = ContactForm())
         
         if request.form.get('recaptcha') == 'recaptcha_2' and ContactForm().validate_on_submit() is False:
-            flash("Вы робот?")
+            flash('Пожалуйста, подтвердите, что вы не робот.')
             return render_template("login.html", key = constants.RECAPTCHA_PUBLIC_KEY, form = ContactForm())
 
         # Forget any user_id
@@ -92,6 +93,8 @@ def login():
         # Ensure username was submitted
         if not request.form.get("mail") or not request.form.get("hash"):
             flash("Вы не указали логин или пароль")
+            if request.form.get('recaptcha') == 'recaptcha_2':
+                return render_template("login.html", key = constants.RECAPTCHA_PUBLIC_KEY, form = ContactForm())
             return redirect('/')
            
 
@@ -106,6 +109,8 @@ def login():
                 password_req = request.form.get("hash").strip()
                 if len(rows) != 1 or not check_password_hash(rows[0][7], password_req):
                     flash('Вы указали неверный логин или пароль')
+                    if request.form.get('recaptcha') == 'recaptcha_2':
+                        return render_template("login.html", key = constants.RECAPTCHA_PUBLIC_KEY, form = ContactForm())
                     return redirect('/')
                     #return apology("invalid username and/or password", 403)
 
@@ -386,11 +391,12 @@ def reset_password():
         responseCaptcha = json.loads(requests.post('https://www.google.com/recaptcha/api/siteverify', 
             data=dict(secret=constants.RECAPTCHA_PRIVATE_KEY, response=token)).text)
         
-        if responseCaptcha['success'] == True and responseCaptcha['score'] < 0.6:
+        if responseCaptcha['success'] == True and responseCaptcha['score'] < constants.MIN_SCORE:
+            flash('Пожалуйста, подтвердите, что вы не робот.')
             return render_template("reset_password.html", key = constants.RECAPTCHA_PUBLIC_KEY, form = ContactForm())
         
         if request.form.get('recaptcha') == 'recaptcha_2' and ContactForm().validate_on_submit() is False:
-            flash("Вы робот?")
+            flash('Пожалуйста, подтвердите, что вы не робот.')
             return render_template("reset_password.html", key = constants.RECAPTCHA_PUBLIC_KEY, form = ContactForm())
         
         user_name = request.form.get('username')
