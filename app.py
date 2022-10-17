@@ -105,7 +105,7 @@ def login():
                 password_req = request.form.get("hash").strip()
                 if len(rows) != 1 or not check_password_hash(rows[0][7], password_req):
                     flash('Вы указали неверный логин или пароль')
-                    return render_template('/login.html', form = form, msg = msg )
+                    return render_template('/login.html' )
                     #return apology("invalid username and/or password", 403)
 
                 # Remember which user has logged in
