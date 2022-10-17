@@ -69,29 +69,30 @@ def index():
 def login():
     """Log user in"""
 
-    form = ContactForm()
-    msg = ""
+    #form = ContactForm()
+    #msg = ""
     
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":  
         today = datetime.datetime.today().strftime("%d.%m.%Y %X")  
 
-        if form.validate_on_submit() is False:
-            msg = "Ошибка валидации"
-            flash("Вы робот?")
-            return render_template('/login.html', form = form, msg = msg )
+        # Вариант с нескрытой капчей
+        #if form.validate_on_submit() is False:
+           # msg = "Ошибка валидации"
+           # flash("Вы робот?")
+           # return render_template('/login.html', form = form, msg = msg )
 
         # Forget any user_id
         session.clear()
         # Ensure username was submitted
         if not request.form.get("mail"):
             #flash('Вы не указали логин')
-            return render_template('/login.html', form = form, msg = msg )
+            return render_template('/login.html')
            
         # Ensure password was submitted
         elif not request.form.get("hash") or len(request.form.get("hash")) < 3:
             flash('Вы указали неверный пароль')
-            return render_template('/login.html', form = form, msg = msg)
+            return render_template('/login.html')
             
         # Query database for username
         try:
@@ -131,7 +132,8 @@ def login():
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
-        return render_template("login.html", form = form, msg = msg)
+        return render_template("login.html")
+        #return render_template("login.html", form = form, msg = msg)
 
 
 @app.route("/users", methods=["GET", "POST"])
@@ -373,16 +375,17 @@ def edit():
 
 @app.route('/reset_password', methods = ['GET', 'POST'])
 def reset_password():
-    form = ContactForm()
-    msg_cap = ""
+    #form = ContactForm()
+    #msg_cap = ""
     if request.method == 'GET':
-        return render_template('/reset_password.html', form = form, msg = msg_cap)
+        return render_template('/reset_password.html')
+        #return render_template('/reset_password.html', form = form, msg = msg_cap)
 
     elif request.method == 'POST':
-        if form.validate_on_submit() is False:
-            msg_cap = "Ошибка валидации"
-            flash("Вы робот?")
-            return render_template('/reset_password.html', form = form, msg = msg_cap )
+        #if form.validate_on_submit() is False:
+         #   msg_cap = "Ошибка валидации"
+          #  flash("Вы робот?")
+           # return render_template('/reset_password.html', form = form, msg = msg_cap )
 
         user_name = request.form.get('username')
         if user_name:
@@ -407,27 +410,27 @@ def reset_password():
                         except Exception as _ex:
                             print('[INFO] Error while working mail sender', _ex)
                             flash("В процессе создания запроса произошла ошибка. Пожалуйста, обновите страницу и повторите попытку.")
-                            return render_template('/reset_password.html', form = form, msg = msg_cap )
+                            return render_template('/reset_password.html')
 
                         cursor.execute("UPDATE users_sales SET hash = %(hash)s WHERE mail = %(mail)s", {'hash': hash, 'mail': user_name})
                         flash('Проверьте свою электронную почту. Если ваш email зарегистрирован в систему, то вы получите письмо с данными для входа.')
-                        return render_template('/login.html', form = form, msg = msg_cap)
+                        return render_template('/login.html')
 
                     else:
                         flash('Проверьте свою электронную почту. Если ваш email зарегистрирован в систему, то вы получите письмо с данными для входа.')
-                        return render_template('/login.html', form = form, msg = msg_cap)
+                        return render_template('/login.html')
 
             except Exception as _ex:
                 print("[INFO] Error while working with PostgresSQL", _ex)
                 flash("В процессе создания запроса произошла ошибка. Пожалуйста, обновите страницу и повторите попытку.")
-                return render_template('reset_password.html', form = form, msg = msg_cap)
+                return render_template('reset_password.html')
             finally:
                 if connection:
                     connection.close()
                     print("[INFO] PostgresSQL connection closed")
         else:
             flash('Укажите адрес электронной почты и повторите запрос')
-            return redirect('reset_password', form = form, msg = msg_cap)
+            return redirect('reset_password')
 
     else:
         return redirect('/')
@@ -688,8 +691,9 @@ def download():
             data_to_download = create_table_to_download()
             file_name = 'Анкета Стандарты продаж.xlsx'
             col0, col1, col2, col3, col4, col5, col6, col7, col8, col9 = \
-                '', "Имя", "Почта", "Вопрос 1", "Вопрос 2", "Вопрос 3", "Вопрос 4", \
-                "Вопрос 5", "Вопрос 6", "Вопрос 7"
+                '', "Имя", "Почта", constants.QUESTIONS_LIST[0], constants.QUESTIONS_LIST[1], \
+                constants.QUESTIONS_LIST[2], constants.QUESTIONS_LIST[3], constants.QUESTIONS_LIST[4], \
+                constants.QUESTIONS_LIST[5], constants.QUESTIONS_LIST[6]
                     
             number, nameList,  mailList, quest1, quest2, quest3, quest4, quest5, quest6, quest7 = \
                     [], [], [], [], [], [], [], [], [], []
@@ -750,6 +754,33 @@ def log_table():
                 print("[INFO] PostgresSQL connection closed")
     else:
         return redirect('/')
+
+
+@app.route("/login_test", methods=["GET", "POST"])
+def login_test():
+    """Log user in"""
+
+    form = ContactForm()
+    msg = ""
+    
+    # User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":  
+        today = datetime.datetime.today().strftime("%d.%m.%Y %X")  
+
+        #if form.validate_on_submit() is False:
+        if not request.form.get('name'):
+         #   msg = "Ошибка валидации"
+            flash("Вы робот?")
+            return render_template('/login_test.html', form = form, msg = msg )
+
+        flash("Good")
+            
+        return redirect ('/login_test')
+
+
+    # User reached route via GET (as by clicking a link or via redirect)
+    else:
+        return render_template("login_test.html", form = form, msg = msg)
 
 
 @app.errorhandler(Exception)

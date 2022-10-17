@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Log In
+    
+{% endblock %}
+
+{% block main %}
+
+<html>
+  <head>
+    <script src="https://www.google.com/recaptcha/api.js"></script>
+     <script>
+        function onSubmit(token) {
+          document.getElementById("form").submit();
+        }
+      </script>
+  </head>
+  <body>
+    
+    <form id="form" action="login_test" method="post">
+        <input name="name" type="text" placeholder="номер">
+        <button class="g-recaptcha" 
+        data-sitekey="6LdoXckhAAAAAIGpoFflYCx7x36jGdtWxn_tSsSd" 
+        data-callback='onSubmit' 
+        data-action='submit'>Submit</button>
+      <button class="btn btn-primary" type="submit">Нажмите, чтобы начать</button>
+      <br/>
+    </form>
+
+  </body>
+</html>
+
+<!--
+ <div>
+    <form action="login_test" method="post">
+         <div class="box">
+            <div>
+                {{ form.csrf_token }}	
+                {{ form.recaptcha }} 
+            </div><br>
+         <div>
+            <button class="btn btn-primary" type="submit">Нажмите, чтобы начать</button>
+         </div>
+        </div> 
+     </form>
+ </div>
+
+ <div id="cookie_notification">
+    <p>Для улучшения работы сайта и его взаимодействия с пользователями мы используем файлы cookie. Продолжая работу с сайтом, Вы разрешаете использование cookie-файлов. Вы всегда можете отключить файлы cookie в настройках Вашего браузера.</p>
+    <button class="button cookie_accept">Принять</button>
+</div>
+-->
+    
+{% endblock %}

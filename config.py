@@ -25,8 +25,8 @@ class Config(object):
     MAIL_MAX_EMAILS = None
     #app.config['MAIL_SUPPRESS_SEND'] = False
     MAIL_ASCII_ATTACHMENTS = False
-    RECAPTCHA_PUBLIC_KEY = "6Lfmx3UiAAAAAMkhGO0yOxvGNskO3srFo5RCFSVL"
-    RECAPTCHA_PRIVATE_KEY = "6Lfmx3UiAAAAAA7lhCDMoIgTvnLkIhU9DDDNLL6P"
+    RECAPTCHA_PUBLIC_KEY = "6LdoXckhAAAAAIGpoFflYCx7x36jGdtWxn_tSsSd"
+    RECAPTCHA_PRIVATE_KEY = "6LdoXckhAAAAAAXQzdITUL7fts2g6GdHAyVKawaE"
     RECAPTCHA_DISABLE = True #  будет капча или нет
     TEMPLATES_AUTO_RELOAD = True
     UPLOAD_FOLDER = 'upload_files'
