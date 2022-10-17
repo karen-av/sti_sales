@@ -1,6 +1,9 @@
 
 
 
+import constants
+
+
 host = "ec2-54-170-90-26.eu-west-1.compute.amazonaws.com"
 user = "vzieytwebikdad"
 password = "a9363bb28e13d6fb310460e9190acb0cf34d2c049d097aa6dae43973f8036292"
@@ -25,8 +28,8 @@ class Config(object):
     MAIL_MAX_EMAILS = None
     #app.config['MAIL_SUPPRESS_SEND'] = False
     MAIL_ASCII_ATTACHMENTS = False
-    RECAPTCHA_PUBLIC_KEY = "6LdoXckhAAAAAIGpoFflYCx7x36jGdtWxn_tSsSd"
-    RECAPTCHA_PRIVATE_KEY = "6LdoXckhAAAAAAXQzdITUL7fts2g6GdHAyVKawaE"
+    RECAPTCHA_PUBLIC_KEY = "6Lfmx3UiAAAAAMkhGO0yOxvGNskO3srFo5RCFSVL"
+    RECAPTCHA_PRIVATE_KEY = "6Lfmx3UiAAAAAA7lhCDMoIgTvnLkIhU9DDDNLL6P"
     RECAPTCHA_DISABLE = True #  будет капча или нет
     TEMPLATES_AUTO_RELOAD = True
     UPLOAD_FOLDER = 'upload_files'

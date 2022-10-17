@@ -24,8 +24,6 @@
         <thead >
             <tr >
                 <th>N</th>
-                <th>Подразделение</th>
-                <th>Руководитель</th>
                 <th>Статус</th>
                 <th>Должность</th>
                 <th>ФИО</th>
@@ -39,8 +37,6 @@
             {% for user in users %}
             <tr> 
                 <td>{{ loop.index }} </td>
-                <td>{{ user.0 }}</td>
-                <td>{{ user.1 }}</td>
                 <td>{{ user.2 }}</td>
                 <td>{{ user.3 }}</td>
                 <td>{{ user.4 }}</td>

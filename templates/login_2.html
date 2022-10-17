@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Log In
+    
+{% endblock %}
+
+{% block main %}
+
+  <body>
+    
+<div class="login_text">
+    <h3>Приветствую Вас на сайте проекта «СТАНДАРТЫ ПРОДАЖ»!<br>
+        <p></p>Здесь Вы познакомитесь с важной информацией по теме, заполните небольшую анкету и сможете задать уточняющие вопросы.<br>
+        <p></p>
+        Добро пожаловать! 2
+        <br><br></h3>
+ </div>
+
+ <div>
+    <form action="/login_test" method="post" >
+        <div class="mb-3" style="margin-top:30px;">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="mail" name="mail" placeholder="Логин" type="text">
+        </div>
+        <div class="mb-3">
+            <input class="form-control mx-auto w-auto" id="hash" name="hash" placeholder="Пароль" type="password">
+            <input type="hidden" name="recaptcha_2" value="recaptcha_2">
+        </div>
+        <div class="box">
+           <div>
+               {{ form.csrf_token }}	
+               {{ form.recaptcha }} 
+           </div><br>
+        <div>
+           <button class="btn btn-primary" type="submit">Нажмите, чтобы начать</button>
+        </div>
+       </div> 
+    </form>
+ </div>
+
+ <div id="cookie_notification">
+    <p>Для улучшения работы сайта и его взаимодействия с пользователями мы используем файлы cookie. Продолжая работу с сайтом, Вы разрешаете использование cookie-файлов. Вы всегда можете отключить файлы cookie в настройках Вашего браузера.</p>
+    <button class="button cookie_accept">Принять</button>
+</div>
+
+</body>
+
+    
+{% endblock %}
+
+
+<!-- <div class="box">
+            <div>
+                {{ form.csrf_token }}	
+                {{ form.recaptcha }} 
+            </div><br> 
+         <div>-->

@@ -19,3 +19,5 @@ QUESTIONS_LIST = [
     'Перечислите, какие инструменты продаж вы используете в Процессе Продаж, во время деловых встреч, планировании работы с ключевыми клиентами? Под инструментами продаж подразумеваются внутренние IT системы, документы, инструкции, банк знаний и т.д.',
     'Ваши комментарии'
 ]
+RECAPTCHA_PUBLIC_KEY = "6LdoXckhAAAAAIGpoFflYCx7x36jGdtWxn_tSsSd"
+RECAPTCHA_PRIVATE_KEY = "6LdoXckhAAAAAAXQzdITUL7fts2g6GdHAyVKawaE"

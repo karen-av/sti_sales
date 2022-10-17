@@ -9,27 +9,54 @@
 
 <html>
   <head>
+    <script src="https://www.google.com/recaptcha/api.js?render={{key}}"></script>
+    <script>
+      function onClick() {;
+        grecaptcha.ready(function() {
+          grecaptcha.execute('{{key}}', {action: 'submit'}).then(function(token) {
+              // Add your logic to submit to your backend server here.
+              document.getElementById("id_token").value = token;
+          });
+        });
+      }
+    </script>
+  </head>
+  
+  <body>
+    <form action="login_test" method="post" onclick="onClick()">
+        <input name="name" type="text" placeholder="Введите любой символ." autocomplete="off" style="width: auto;">
+        <input type="hidden" name="id_token" id="id_token">
+        <button class="btn btn-primary"  type="submit">Submivt</button>
+    </form>
+  </body>
+</html>
+
+{% endblock %}
+
+<!--
+ <head>
     <script src="https://www.google.com/recaptcha/api.js"></script>
      <script>
         function onSubmit(token) {
           document.getElementById("form").submit();
+          var name = 'log'
+          console.log(name, token)
         }
       </script>
   </head>
   <body>
     
     <form id="form" action="login_test" method="post">
-        <input name="name" type="text" placeholder="номер">
-        <button class="g-recaptcha" 
+        <input name="name" type="text" placeholder="Введите любой символ." autocomplete="off" style="width: auto;">
+        <button class="g-recaptcha btn btn-primary" 
         data-sitekey="6LdoXckhAAAAAIGpoFflYCx7x36jGdtWxn_tSsSd" 
         data-callback='onSubmit' 
-        data-action='submit'>Submit</button>
-      <button class="btn btn-primary" type="submit">Нажмите, чтобы начать</button>
-      <br/>
+        data-action='submit'>Submivt</button>
+      
     </form>
 
   </body>
-</html>
+-->
 
 <!--
  <div>
@@ -52,4 +79,3 @@
 </div>
 -->
     
-{% endblock %}

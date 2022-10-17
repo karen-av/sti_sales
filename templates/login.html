@@ -8,39 +8,54 @@
 {% block main %}
 <head>
     <script src="https://www.google.com/recaptcha/api.js"></script>
-     <script>
+    <script>
         function onSubmit(token) {
-          document.getElementById("form").submit();
+            document.getElementById("id_token").value = token;
+            document.getElementById("form").submit();
         }
       </script>
-  </head>
-  <body>
+</head>
+<body>
     
 <div class="login_text">
     <h3>Приветствую Вас на сайте проекта «СТАНДАРТЫ ПРОДАЖ»!<br>
         <p></p>Здесь Вы познакомитесь с важной информацией по теме, заполните небольшую анкету и сможете задать уточняющие вопросы.<br>
         <p></p>
         Добро пожаловать!
-        <br><br></h3>
+        <br></h3>
  </div>
 
  <div>
-      <form action="/login" method="post" id="form">
+
+    {% if form %}
+    <form action="login" method="post">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="mail" name="mail" placeholder="Логин" type="text" required>
+            <br>
+            <input class="form-control mx-auto w-auto" id="hash" name="hash" placeholder="Пароль" type="password" required>
+            <br>
+            <input name="recaptcha" value="recaptcha_2" type="hidden">
+        <div class="box" style="margin-bottom: 0%;">
+                {{ form.csrf_token }}	
+                {{ form.recaptcha }} 
+            </div>
+        <button class="btn btn-primary" type='submit'>Нажмите, чтобы начать доп</button>
+       
+    </form>
+    {% else %}
+    <form action="login" method="post" id="form">
          <div class="mb-3" style="margin-top:30px;">
-             <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="mail" name="mail" placeholder="Логин" type="text">
+             <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="mail" name="mail" placeholder="Логин" type="text" required>
          </div>
          <div class="mb-3">
-             <input class="form-control mx-auto w-auto" id="hash" name="hash" placeholder="Пароль" type="password">
+             <input class="form-control mx-auto w-auto" id="hash" name="hash" placeholder="Пароль" type="password" required>
          </div>
-            <button class="g-recaptcha btn btn-primary" 
-                data-sitekey="6LdoXckhAAAAAIGpoFflYCx7x36jGdtWxn_tSsSd" 
-                data-callback='onSubmit' 
-                data-action='submit'>Нажмите, чтобы начать</button>
+         <button class="g-recaptcha btn btn-primary" data-sitekey="{{key}}"  data-callback='onSubmit' data-action='submit'>Нажмите, чтобы начать</button>
          </div>
         </div> 
+        <input type="hidden" name="id_token" id="id_token">
      </form>
  </div>
-
+{%endif%}
  <div id="cookie_notification">
     <p>Для улучшения работы сайта и его взаимодействия с пользователями мы используем файлы cookie. Продолжая работу с сайтом, Вы разрешаете использование cookie-файлов. Вы всегда можете отключить файлы cookie в настройках Вашего браузера.</p>
     <button class="button cookie_accept">Принять</button>
@@ -51,10 +66,3 @@
     
 {% endblock %}
 
-
-<!-- <div class="box">
-            <div>
-                {{ form.csrf_token }}	
-                {{ form.recaptcha }} 
-            </div><br> 
-         <div>-->
