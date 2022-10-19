@@ -401,16 +401,24 @@ def reset_password():
     elif request.method == 'POST':   
         token = request.form.get("id_token")
         # запрос данных у google
-        responseCaptcha = json.loads(requests.post('https://www.google.com/recaptcha/api/siteverify', 
-            data=dict(secret=constants.RECAPTCHA_PRIVATE_KEY, response=token)).text)
-        
+        try:
+            responseCaptcha = json.loads(requests.post('https://www.google.com/recaptcha/api/siteverify', 
+                data=dict(secret=constants.RECAPTCHA_PRIVATE_KEY, response=token)).text)
+        except:
+            return redirect ('/')
+
         if responseCaptcha['success'] == True and responseCaptcha['score'] < constants.MIN_SCORE:
             flash('Пожалуйста, подтвердите, что вы не робот.')
             return render_template("reset_password.html", key = constants.RECAPTCHA_PUBLIC_KEY, form = ContactForm())
         
-        if request.form.get('recaptcha') == 'recaptcha_2' and ContactForm().validate_on_submit() is False:
+        elif request.form.get('recaptcha') == 'recaptcha_2' and ContactForm().validate_on_submit() is False:
             flash('Пожалуйста, подтвердите, что вы не робот.')
             return render_template("reset_password.html", key = constants.RECAPTCHA_PUBLIC_KEY, form = ContactForm())
+        
+        elif responseCaptcha['success'] == False and request.form.get('recaptcha') != 'recaptcha_2':
+            flash('Пожалуйста, подтвердите, что вы не робот.')
+            return render_template("login.html", key = constants.RECAPTCHA_PUBLIC_KEY, form = ContactForm())
+
         
         user_name = request.form.get('username')
         if user_name:
@@ -439,11 +447,11 @@ def reset_password():
 
                         cursor.execute("UPDATE users_sales SET hash = %(hash)s WHERE mail = %(mail)s", {'hash': hash, 'mail': user_name})
                         flash('Проверьте свою электронную почту. Если ваш email зарегистрирован в систему, то вы получите письмо с данными для входа.')
-                        return render_template('/login.html')
+                        return redirect ('/')
 
                     else:
                         flash('Проверьте свою электронную почту. Если ваш email зарегистрирован в систему, то вы получите письмо с данными для входа.')
-                        return render_template('/login.html')
+                        return redirect ('/')
 
             except Exception as _ex:
                 print("[INFO] Error while working with PostgresSQL", _ex)
