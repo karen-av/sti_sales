@@ -98,11 +98,8 @@ def login():
 
         if responseCaptcha['success'] == True:
             score = responseCaptcha['score']
-            print('aaa')
         elif request.form.get('recaptcha') == 'recaptcha_2':
             score = request.form.get('score_beck')
-            print('bbb')
-        print(score)
 
         # Forget any user_id
         session.clear()
