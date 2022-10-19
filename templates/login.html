@@ -33,6 +33,7 @@
             <br>
             <input class="form-control mx-auto w-auto" id="hash" name="hash" placeholder="Пароль" type="password" required>
             <br>
+            <input type="hidden" name="score_beck" value="{{score}}">
             <input name="recaptcha" value="recaptcha_2" type="hidden">
         <div class="box" style="margin-bottom: 0%;">
                 {{ form.csrf_token }}	

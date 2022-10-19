@@ -1,11 +1,9 @@
-from ast import Try
-from cProfile import run
 from flask import Flask, redirect, render_template, request, session, flash
 from flask_mail import Mail, Message
 from flask_session import Session
 from config import  Config
-from helpers import apology, login_required, checkUsername, checkUsernameMastContain, createPassword, escape,\
-    checkPassword, checkPasswordBadSymbol
+from helpers import apology, login_required, checkUsername, \
+    checkUsernameMastContain, createPassword, escape, checkPassword, checkPasswordBadSymbol
 import os
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -15,8 +13,8 @@ from werkzeug.exceptions import HTTPException
 import time
 import constants
 import pandas as pd
-from decorator import connection_db, send_message_manager, allowed_file, upload_file_users, download_file_to_user,\
-    create_table_to_download
+from decorator import connection_db, send_message_manager, allowed_file, \
+    upload_file_users, download_file_to_user, create_table_to_download
 import requests
 import json
 
@@ -74,18 +72,37 @@ def login():
     if request.method == "POST":   
         today = datetime.datetime.today().strftime("%d.%m.%Y %X")  
         token = request.form.get("id_token")
-        
+
         # запрос данных у google
-        responseCaptcha = json.loads(requests.post('https://www.google.com/recaptcha/api/siteverify', 
-            data=dict(secret=constants.RECAPTCHA_PRIVATE_KEY, response=token)).text)
-        print(responseCaptcha)
+        try:
+            responseCaptcha = json.loads(requests.post('https://www.google.com/recaptcha/api/siteverify', 
+                data=dict(secret=constants.RECAPTCHA_PRIVATE_KEY, response=token)).text)
+            print(responseCaptcha)
+        except:
+            return redirect('/')
+
         if responseCaptcha['success'] == True and responseCaptcha['score'] < constants.MIN_SCORE:
             flash('Пожалуйста, подтвердите, что вы не робот.')
-            return render_template("login.html", key = constants.RECAPTCHA_PUBLIC_KEY, form = ContactForm())
+            return render_template("login.html", key = constants.RECAPTCHA_PUBLIC_KEY,
+                form = ContactForm(), score = responseCaptcha['score'])
         
-        if request.form.get('recaptcha') == 'recaptcha_2' and ContactForm().validate_on_submit() is False:
+        elif request.form.get('recaptcha') == 'recaptcha_2' and ContactForm().validate_on_submit() is False:
+            score = request.form.get('score_beck')
             flash('Пожалуйста, подтвердите, что вы не робот.')
-            return render_template("login.html", key = constants.RECAPTCHA_PUBLIC_KEY, form = ContactForm())
+            return render_template("login.html", key = constants.RECAPTCHA_PUBLIC_KEY, form = ContactForm(), score = score)
+        
+        elif responseCaptcha['success'] == False and request.form.get('recaptcha') != 'recaptcha_2':
+            score = 0
+            flash('Пожалуйста, подтвердите, что вы не робот.')
+            return render_template("login.html", key = constants.RECAPTCHA_PUBLIC_KEY, form = ContactForm(), score = score)
+
+        if responseCaptcha['success'] == True:
+            score = responseCaptcha['score']
+            print('aaa')
+        elif request.form.get('recaptcha') == 'recaptcha_2':
+            score = request.form.get('score_beck')
+            print('bbb')
+        print(score)
 
         # Forget any user_id
         session.clear()
@@ -123,7 +140,7 @@ def login():
                 #insert in to log table
                 cursor.execute("INSERT INTO log_table_sales (name, mail, status, date, score) \
                     VALUES(%(name)s, %(mail)s, %(status)s, %(date)s, %(score)s)", {'name': session["user_name"], \
-                    'mail': session["user_mail"], 'status': session["user_status"], 'date': today, 'score': responseCaptcha['score']})
+                    'mail': session["user_mail"], 'status': session["user_status"], 'date': today, 'score': score})
                 
                 # Redirect user to home page
                 return redirect('/' )
@@ -752,7 +769,6 @@ def log_table():
             with connection.cursor() as cursor:
                 cursor.execute("SELECT name, mail, status, date, score FROM log_table_sales ORDER BY id DESC")
                 log_data = cursor.fetchall()
-                print(log_data)
                 cursor.execute("SELECT exception_data, exception_code, user_mail, user_status, \
                     exception_date FROM exception_table_sales ORDER BY id DESC")
                 exception_table = cursor.fetchall()
