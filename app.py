@@ -87,7 +87,7 @@ def login():
                 form = ContactForm(), score = responseCaptcha['score'])
         
         elif request.form.get('recaptcha') == 'recaptcha_2' and ContactForm().validate_on_submit() is False:
-            score = request.form.get('score_beck')
+            score = request.form.get('score_back')
             flash('Пожалуйста, подтвердите, что вы не робот.')
             return render_template("login.html", key = constants.RECAPTCHA_PUBLIC_KEY, form = ContactForm(), score = score)
         
@@ -99,7 +99,7 @@ def login():
         if responseCaptcha['success'] == True:
             score = responseCaptcha['score']
         elif request.form.get('recaptcha') == 'recaptcha_2':
-            score = request.form.get('score_beck')
+            score = request.form.get('score_back')
 
         # Forget any user_id
         session.clear()
