@@ -4,9 +4,9 @@
 import constants
 
 
-host = "ec2-54-170-90-26.eu-west-1.compute.amazonaws.com"
-user = "vzieytwebikdad"
-password = "a9363bb28e13d6fb310460e9190acb0cf34d2c049d097aa6dae43973f8036292"
+host = "*********"
+user = "********"
+password = "**********"
 db_name = "d8i882gd7ls1fi"
 port = 5432
 
@@ -23,13 +23,13 @@ class Config(object):
     MAIL_USE_SSL = True
     #app.config['MAIL_DEBUG'] = True
     MAIL_USERNAME = 'backoffice@sti-partners.ru'
-    MAIL_PASSWORD = 'jz4V4$?9RpiGzVG'
+    MAIL_PASSWORD = '**********'
     MAIL_DEFAULT_SENDER = 'backoffice@sti-partners.ru'
     MAIL_MAX_EMAILS = None
     #app.config['MAIL_SUPPRESS_SEND'] = False
     MAIL_ASCII_ATTACHMENTS = False
     RECAPTCHA_PUBLIC_KEY = "6Lfmx3UiAAAAAMkhGO0yOxvGNskO3srFo5RCFSVL"
-    RECAPTCHA_PRIVATE_KEY = "6Lfmx3UiAAAAAA7lhCDMoIgTvnLkIhU9DDDNLL6P"
+    RECAPTCHA_PRIVATE_KEY = "**********"
     RECAPTCHA_DISABLE = True #  будет капча или нет
     TEMPLATES_AUTO_RELOAD = True
     UPLOAD_FOLDER = 'upload_files'
